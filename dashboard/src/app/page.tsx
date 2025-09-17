@@ -4,6 +4,7 @@ import { useState } from "react"
 import { EnhancedHeader } from "@/components/enhanced-header"
 import { EnhancedSidebar } from "@/components/enhanced-sidebar"
 import { BusinessHealthOverview } from "@/components/business-health-overview"
+import { BusinessHealthDetailed } from "@/components/business-health-detailed"
 import { MetricsOverview } from "@/components/metrics-overview"
 import { FinancialAnalytics } from "@/components/financial-analytics"
 import { CustomerIntelligence } from "@/components/customer-intelligence"
@@ -20,7 +21,7 @@ import { TopProducts } from "@/components/top-products"
 import { SettingsPage } from "@/components/settings-page"
 
 export default function Dashboard() {
-  const [activeSection] = useState("Overview")
+  const [activeSection, setActiveSection] = useState("Overview")
 
   const renderActiveSection = () => {
     switch (activeSection) {
@@ -69,7 +70,7 @@ export default function Dashboard() {
           </div>
         )
       case "Business Health":
-        return <BusinessHealthOverview />
+        return <BusinessHealthDetailed />
       case "Settings":
         return <SettingsPage />
       default:
@@ -99,7 +100,10 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background">
       <EnhancedHeader />
       <div className="flex">
-        <EnhancedSidebar />
+        <EnhancedSidebar 
+          activeSection={activeSection} 
+          setActiveSection={setActiveSection} 
+        />
         <main className="flex-1 p-6">
           <div className="max-w-7xl mx-auto">
             {renderActiveSection()}

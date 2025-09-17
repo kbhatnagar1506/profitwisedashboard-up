@@ -33,61 +33,60 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    id: 'overview',
+    id: 'Overview',
     label: 'Overview',
-    icon: ChartColumn,
-    isActive: true
+    icon: ChartColumn
   },
   {
-    id: 'financial',
+    id: 'Financial Analytics',
     label: 'Financial Analytics',
     icon: DollarSign,
     badge: '3',
     badgeVariant: 'secondary'
   },
   {
-    id: 'customers',
+    id: 'Customer Intelligence',
     label: 'Customer Intelligence',
     icon: Users,
     badge: 'New',
     badgeVariant: 'default'
   },
   {
-    id: 'growth',
+    id: 'Growth Opportunities',
     label: 'Growth Opportunities',
     icon: Target
   },
   {
-    id: 'cashflow',
+    id: 'Cash Flow',
     label: 'Cash Flow',
     icon: Wallet,
     badge: '1',
     badgeVariant: 'destructive'
   },
   {
-    id: 'social',
+    id: 'Social Media',
     label: 'Social Media',
     icon: Share2
   },
   {
-    id: 'recommendations',
+    id: 'AI Recommendations',
     label: 'AI Recommendations',
     icon: Lightbulb,
     badge: '3',
     badgeVariant: 'secondary'
   },
   {
-    id: 'chat',
+    id: 'AI Chat',
     label: 'AI Chat',
     icon: MessageSquare
   },
   {
-    id: 'health',
+    id: 'Business Health',
     label: 'Business Health',
     icon: Activity
   },
   {
-    id: 'settings',
+    id: 'Settings',
     label: 'Settings',
     icon: Settings
   }
@@ -121,9 +120,13 @@ const healthMetrics: HealthMetric[] = [
   }
 ]
 
-export function EnhancedSidebar() {
+interface EnhancedSidebarProps {
+  activeSection: string
+  setActiveSection: (section: string) => void
+}
+
+export function EnhancedSidebar({ activeSection, setActiveSection }: EnhancedSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const [activeItem, setActiveItem] = useState('overview')
 
   return (
     <div className={`bg-sidebar border-r border-sidebar-border transition-all duration-300 ${
@@ -134,9 +137,27 @@ export function EnhancedSidebar() {
         <div className="px-4 py-6 border-b border-sidebar-border">
           <div className="flex items-center justify-between">
             {!isCollapsed && (
-              <div>
-                <h2 className="text-lg font-semibold text-sidebar-foreground">Business Intelligence</h2>
-                <p className="text-sm text-sidebar-foreground/60">AI-Powered Dashboard</p>
+              <div className="flex items-center space-x-3">
+                <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <img 
+                    src="/logoprofitwise.png" 
+                    alt="ProfitWise Logo" 
+                    className="h-8 w-8 object-contain"
+                  />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-sidebar-foreground">ProfitWise</h2>
+                  <p className="text-sm text-sidebar-foreground/60">AI-Powered Dashboard</p>
+                </div>
+              </div>
+            )}
+            {isCollapsed && (
+              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto">
+                <img 
+                  src="/logoprofitwise.png" 
+                  alt="ProfitWise Logo" 
+                  className="h-8 w-8 object-contain"
+                />
               </div>
             )}
             <Button
@@ -159,15 +180,15 @@ export function EnhancedSidebar() {
           {navItems.map((item) => (
             <Button
               key={item.id}
-              variant={activeItem === item.id ? "secondary" : "ghost"}
+              variant={activeSection === item.id ? "secondary" : "ghost"}
               className={`w-full justify-start h-10 px-3 ${
                 isCollapsed ? 'px-2' : ''
               } ${
-                activeItem === item.id 
+                activeSection === item.id 
                   ? 'bg-sidebar-accent shadow-sm' 
                   : 'hover:bg-sidebar-accent'
               }`}
-              onClick={() => setActiveItem(item.id)}
+              onClick={() => setActiveSection(item.id)}
             >
               <item.icon className={`h-4 w-4 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
               {!isCollapsed && (

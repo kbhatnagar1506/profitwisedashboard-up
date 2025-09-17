@@ -106,12 +106,16 @@ export function EnhancedHeader() {
       <div className="flex h-16 items-center px-6">
         {/* Logo and Brand */}
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">P</span>
+          <div className="flex items-center space-x-3">
+            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <img 
+                src="/logoprofitwise.png" 
+                alt="ProfitWise Logo" 
+                className="h-8 w-8 object-contain"
+              />
             </div>
             <div>
-              <span className="font-bold text-foreground text-lg">Business AI</span>
+              <span className="font-bold text-foreground text-lg">ProfitWise</span>
               <div className="flex items-center gap-1">
                 <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
                 <span className="text-xs text-muted-foreground">Health: 85%</span>
