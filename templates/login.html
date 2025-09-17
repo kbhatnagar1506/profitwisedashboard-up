@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Login - ProfitWise</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Times+New+Roman:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='profitwiseicon1.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+    <!-- Login Page Video Background -->
+    <div class="login-video-container">
+        <video id="loginVideo" class="login-video" autoplay muted loop playsinline webkit-playsinline preload="auto">
+            <source src="{{ url_for('static', filename='proftiwiseloginvideo.mp4') }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <!-- Login Page Content -->
+    <div class="login-page-content">
+        <!-- Logo -->
+        <div class="login-logo">
+            <img src="{{ url_for('static', filename='profitwiseicon1.png') }}" alt="ProfitWise" class="login-logo-icon">
+        </div>
+
+        <!-- Login Form Container -->
+        <div class="login-form-container">
+            <div class="login-form-wrapper">
+                <!-- Form Toggle -->
+                <div class="form-toggle">
+                    <button id="loginTab" class="toggle-button active">Login</button>
+                    <button id="signupTab" class="toggle-button">Sign Up</button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form active">
+                    <h2 class="form-title">Welcome Back</h2>
+                    <p class="form-subtitle">Sign in to your ProfitWise account</p>
+                    
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" name="password" required>
+                    </div>
+                    
+                    <button type="submit" class="submit-button">
+                        <img src="{{ url_for('static', filename='profitwiseicon1.png') }}" alt="ProfitWise Icon" class="button-icon">
+                        <span>Sign In</span>
+                    </button>
+                    
+                    <div class="form-links">
+                        <a href="#" id="forgotPasswordLink">Forgot Password?</a>
+                    </div>
+                    
+                    <div id="loginMessage" class="form-message" style="display: none;"></div>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signupForm" class="auth-form">
+                    <h2 class="form-title">Create Account</h2>
+                    <p class="form-subtitle">Join ProfitWise and unlock AI-powered insights</p>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="signupName">Full Name</label>
+                            <input type="text" id="signupName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signupPhone">Phone Number</label>
+                            <input type="tel" id="signupPhone" name="phone" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address</label>
+                        <input type="email" id="signupEmail" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" name="password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupConfirmPassword">Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" name="confirmPassword" required>
+                    </div>
+                    
+                    <button type="submit" class="submit-button">
+                        <img src="{{ url_for('static', filename='profitwiseicon1.png') }}" alt="ProfitWise Icon" class="button-icon">
+                        <span>Create Account</span>
+                    </button>
+                    
+                    <div id="signupMessage" class="form-message" style="display: none;"></div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <img src="{{ url_for('static', filename='logoprofitwise-clean.png') }}" alt="ProfitWise Logo" class="loading-logo-img">
+            </div>
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            <div class="loading-text">
+                <h2>Welcome to ProfitWise!</h2>
+                <p>Setting up your dashboard...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+</body>
+</html>

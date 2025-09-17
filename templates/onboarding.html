@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProfitWise Onboarding</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .onboarding-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .onboarding-header {
+            display: none;
+        }
+
+
+        .onboarding-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
+        .onboarding-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+        }
+
+        .step-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .step-number {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+
+
+        .step-container {
+            background: transparent;
+            border-radius: 0;
+            padding: 2rem;
+            backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            width: 100%;
+            max-width: 500px;
+            display: none;
+        }
+
+        .step-container.active {
+            display: block;
+        }
+
+        .step-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
+        .step-description {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #ffffff;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .form-input::placeholder, .form-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .searchable-dropdown {
+            position: relative;
+            margin-top: 1rem;
+        }
+
+        .dropdown-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-input:focus {
+            outline: none;
+            border-color: #ffffff;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .dropdown-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .dropdown-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #000000;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            backdrop-filter: blur(20px);
+        }
+
+        .dropdown-list.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item-name {
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-item-description {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .file-upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .file-upload-area:hover {
+            border-color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .file-upload-area.dragover {
+            border-color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .file-list {
+            margin-top: 1rem;
+        }
+
+        .file-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-name {
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .file-remove {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .financial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .financial-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .financial-section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 3rem;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-secondary {
+            background: rgba(0, 0, 0, 0.3);
+            color: #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .btn-primary {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .btn-primary:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .voice-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .voice-input-container .form-input,
+        .voice-input-container .form-textarea {
+            flex: 1;
+        }
+
+        .mic-button {
+            background: #000000;
+            border: none;
+            border-radius: 50%;
+            padding: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .mic-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .mic-button:active {
+            transform: scale(0.95);
+        }
+
+        .mic-button.recording {
+            background: #ffffff;
+            color: #000000;
+            animation: pulse 1s infinite;
+        }
+
+        .mic-button.processing {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .mic-button svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .voice-status {
+            position: absolute;
+            top: -30px;
+            left: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: #ffffff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            display: none;
+        }
+
+        .voice-status.show {
+            display: block;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .step-dot.active {
+            background: #00ff88;
+        }
+
+        .step-dot.completed {
+            background: #87ceeb;
+        }
+
+        @media (max-width: 768px) {
+            .onboarding-container {
+                padding: 1rem;
+            }
+            
+            .step-container {
+                padding: 2rem;
+            }
+            
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .financial-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="onboarding-container">
+        
+
+        <!-- Step 1: Business Category -->
+        <div class="step-container active" id="step1">
+            <div class="step-header">
+                <div class="step-number">Step 1</div>
+            </div>
+            <h2 class="step-title">What's your business category?</h2>
+            <p class="step-description">Select the category that best describes your business to help us provide relevant insights.</p>
+            
+            <div class="form-group">
+                <label class="form-label">Business Category</label>
+                <div class="searchable-dropdown">
+                    <input type="text" id="categorySearch" class="dropdown-input" placeholder="Search for your business category..." autocomplete="off">
+                    <div class="dropdown-list" id="categoryDropdown">
+                        <!-- Categories will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Business Information -->
+        <div class="step-container" id="step2">
+            <div class="step-header">
+                <div class="step-number">Step 2</div>
+            </div>
+            <h2 class="step-title">Tell us about your business</h2>
+            <p class="step-description">Provide basic information about your business.</p>
+            
+            <div class="form-group">
+                <label class="form-label" for="businessName">Business Name</label>
+                <div class="voice-input-container">
+                    <input type="text" id="businessName" class="form-input" placeholder="Enter your business name">
+                    <button type="button" class="mic-button" onmousedown="startVoiceInput('businessName')" onmouseup="stopVoiceInput()" onmouseleave="stopVoiceInput()" ontouchstart="startVoiceInput('businessName')" ontouchend="stopVoiceInput()" title="Hold to speak">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        </svg>
+                    </button>
+                    <div class="voice-status" id="voiceStatus-businessName"></div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="websiteUrl">Website URL (Optional)</label>
+                <div class="voice-input-container">
+                    <input type="url" id="websiteUrl" class="form-input" placeholder="https://yourbusiness.com">
+                    <button type="button" class="mic-button" onmousedown="startVoiceInput('websiteUrl')" onmouseup="stopVoiceInput()" onmouseleave="stopVoiceInput()" title="Hold to speak">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        </svg>
+                    </button>
+                    <div class="voice-status" id="voiceStatus-websiteUrl"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Document Upload -->
+        <div class="step-container" id="step3">
+            <div class="step-header">
+                <div class="step-number">Step 3</div>
+            </div>
+            <h2 class="step-title">Upload your business documents</h2>
+            <p class="step-description">Upload financial statements, tax returns, or other relevant documents for analysis.</p>
+            
+            <div class="form-group">
+                <label class="form-label">Business Documents</label>
+                <div class="file-upload-area" id="fileUploadArea">
+                    <div class="upload-icon">📄</div>
+                    <div class="upload-text">Drag & drop files here or click to browse</div>
+                    <div class="upload-subtext">PDF, DOC, DOCX, XLS, XLSX files supported</div>
+                    <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.xls,.xlsx" style="display: none;">
+                </div>
+                <div class="file-list" id="fileList"></div>
+            </div>
+        </div>
+
+        <!-- Step 4: Revenue Questions -->
+        <div class="step-container" id="step4">
+            <div class="step-header">
+                <div class="step-number">Step 4</div>
+            </div>
+            <h2 class="step-title">💵 Revenue</h2>
+            <p class="step-description">Help us understand your revenue streams and patterns.</p>
+            
+            <div class="form-group">
+                <label class="form-label" for="monthlyRevenue">What are your monthly revenues (last 12–24 months)?</label>
+                <input type="text" id="monthlyRevenue" class="form-input" placeholder="e.g., $50,000 - $75,000">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="revenueModel">How do you make money?</label>
+                <select id="revenueModel" class="form-select">
+                    <option value="">Select revenue model</option>
+                    <option value="products">Products</option>
+                    <option value="services">Services</option>
+                    <option value="subscriptions">Subscriptions</option>
+                    <option value="ads">Advertising</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="topRevenueSources">Which products/customers bring the most revenue?</label>
+                <div class="voice-input-container">
+                    <textarea id="topRevenueSources" class="form-textarea" placeholder="Describe your top revenue sources" rows="3"></textarea>
+                    <button type="button" class="mic-button" onmousedown="startVoiceInput('topRevenueSources')" onmouseup="stopVoiceInput()" onmouseleave="stopVoiceInput()" title="Hold to speak">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        </svg>
+                    </button>
+                    <div class="voice-status" id="voiceStatus-topRevenueSources"></div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="revenueType">Do you have recurring revenue or one-time sales?</label>
+                <select id="revenueType" class="form-select">
+                    <option value="">Select type</option>
+                    <option value="recurring">Mostly recurring (subscriptions/contracts)</option>
+                    <option value="one-time">Mostly one-time sales</option>
+                    <option value="mixed">Mixed (both recurring and one-time)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="seasonality">Do you face seasonality?</label>
+                <select id="seasonality" class="form-select">
+                    <option value="">Select seasonality</option>
+                    <option value="high">High seasonality (peak vs slow months)</option>
+                    <option value="moderate">Moderate seasonality</option>
+                    <option value="low">Low seasonality (consistent year-round)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Step 5: Costs (COGS & OPEX) -->
+        <div class="step-container" id="step5">
+            <div class="step-header">
+                <div class="step-number">Step 5</div>
+            </div>
+            <h2 class="step-title">📦 Costs (COGS & OPEX)</h2>
+            <p class="step-description">Help us understand your cost structure and expenses.</p>
+            
+            <div class="form-group">
+                <label class="form-label" for="directCosts">What are your direct costs (materials, suppliers, labor)?</label>
+                <div class="voice-input-container">
+                    <textarea id="directCosts" class="form-textarea" placeholder="Describe your main direct costs" rows="3"></textarea>
+                    <button type="button" class="mic-button" onmousedown="startVoiceInput('directCosts')" onmouseup="stopVoiceInput()" onmouseleave="stopVoiceInput()" title="Hold to speak">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        </svg>
+                    </button>
+                    <div class="voice-status" id="voiceStatus-directCosts"></div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="topSuppliers">Who are your top 5 suppliers/vendors, and what are the terms?</label>
+                <div class="voice-input-container">
+                    <textarea id="topSuppliers" class="form-textarea" placeholder="List your top suppliers and their terms" rows="3"></textarea>
+                    <button type="button" class="mic-button" onmousedown="startVoiceInput('topSuppliers')" onmouseup="stopVoiceInput()" onmouseleave="stopVoiceInput()" title="Hold to speak">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        </svg>
+                    </button>
+                    <div class="voice-status" id="voiceStatus-topSuppliers"></div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="operatingExpenses">What are your operating expenses (rent, salaries, utilities, software, marketing, etc.)?</label>
+                <textarea id="operatingExpenses" class="form-textarea" placeholder="List your main operating expenses" rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="fastestGrowingExpenses">Which expenses have grown fastest in the last year?</label>
+                <input type="text" id="fastestGrowingExpenses" class="form-input" placeholder="e.g., Marketing costs, software subscriptions">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="wasteTracking">Are you tracking waste/inefficiencies (unused software, overstaffing, unnecessary vendors)?</label>
+                <select id="wasteTracking" class="form-select">
+                    <option value="">Select tracking level</option>
+                    <option value="comprehensive">Yes, comprehensive tracking</option>
+                    <option value="basic">Basic tracking</option>
+                    <option value="minimal">Minimal tracking</option>
+                    <option value="none">No tracking</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Step 6: Customers -->
+        <div class="step-container" id="step6">
+            <div class="step-header">
+                <div class="step-number">Step 6</div>
+            </div>
+            <h2 class="step-title">📈 Customers</h2>
+            <p class="step-description">Help us understand your customer base and acquisition.</p>
+            
+            <div class="form-group">
+                <label class="form-label" for="customerAcquisitionCost">How much do you spend to acquire one new customer (CAC)?</label>
+                <input type="text" id="customerAcquisitionCost" class="form-input" placeholder="e.g., $150 per customer">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="revenuePerCustomer">What's the average revenue per customer?</label>
+                <input type="text" id="revenuePerCustomer" class="form-input" placeholder="e.g., $500 per customer">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="customerRetention">How long do customers stay (retention/churn rate)?</label>
+                <select id="customerRetention" class="form-select">
+                    <option value="">Select retention period</option>
+                    <option value="less-than-1-year">Less than 1 year</option>
+                    <option value="1-2-years">1-2 years</option>
+                    <option value="2-5-years">2-5 years</option>
+                    <option value="more-than-5-years">More than 5 years</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="topCustomers">Who are your top 20% customers by value? (Pareto principle → 80% profit often comes from 20% customers)</label>
+                <textarea id="topCustomers" class="form-textarea" placeholder="Describe your top customers and their characteristics" rows="3"></textarea>
+            </div>
+        </div>
+
+        <!-- Step 7: Growth & Pricing -->
+        <div class="step-container" id="step7">
+            <div class="step-header">
+                <div class="step-number">Step 7</div>
+            </div>
+            <h2 class="step-title">🚀 Growth & Pricing</h2>
+            <p class="step-description">Help us understand your growth strategy and pricing model.</p>
+            
+            <div class="form-group">
+                <label class="form-label" for="lastPriceChange">When was the last time you changed your prices?</label>
+                <select id="lastPriceChange" class="form-select">
+                    <option value="">Select timeframe</option>
+                    <option value="within-6-months">Within 6 months</option>
+                    <option value="6-12-months">6-12 months ago</option>
+                    <option value="1-2-years">1-2 years ago</option>
+                    <option value="more-than-2-years">More than 2 years ago</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="discountImpact">Do you discount often? If yes, what's the impact on margin?</label>
+                <textarea id="discountImpact" class="form-textarea" placeholder="Describe your discounting strategy and its impact" rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="leadGeneration">How are you finding new leads?</label>
+                <select id="leadGeneration" class="form-select">
+                    <option value="">Select methods</option>
+                    <option value="ads">Paid advertising</option>
+                    <option value="referrals">Referrals</option>
+                    <option value="organic">Organic (SEO, content)</option>
+                    <option value="social">Social media</option>
+                    <option value="multiple">Multiple methods</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="upsellCrossSell">Do you upsell/cross-sell existing customers?</label>
+                <select id="upsellCrossSell" class="form-select">
+                    <option value="">Select strategy</option>
+                    <option value="aggressive">Yes, aggressive upselling</option>
+                    <option value="moderate">Moderate upselling</option>
+                    <option value="minimal">Minimal upselling</option>
+                    <option value="none">No upselling</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Step 8: Cash Flow & Debt -->
+        <div class="step-container" id="step8">
+            <div class="step-header">
+                <div class="step-number">Step 8</div>
+            </div>
+            <h2 class="step-title">💰 Cash Flow & Debt</h2>
+            <p class="step-description">Help us understand your cash flow patterns and debt situation.</p>
+            
+            <div class="form-group">
+                <label class="form-label" for="cashFlow">What's your average monthly cash inflow vs outflow?</label>
+                <input type="text" id="cashFlow" class="form-input" placeholder="e.g., $60,000 in, $45,000 out">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="cashShortages">Do you experience cash shortages at certain times of the year?</label>
+                <select id="cashShortages" class="form-select">
+                    <option value="">Select frequency</option>
+                    <option value="never">Never</option>
+                    <option value="rarely">Rarely</option>
+                    <option value="sometimes">Sometimes</option>
+                    <option value="often">Often</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="debtLoans">What debts/loans do you have (and at what interest rates)?</label>
+                <textarea id="debtLoans" class="form-textarea" placeholder="List your debts and interest rates" rows="3"></textarea>
+            </div>
+        </div>
+
+        <!-- Step 9: Strategy & Efficiency -->
+        <div class="step-container" id="step9">
+            <div class="step-header">
+                <div class="step-number">Step 9</div>
+            </div>
+            <h2 class="step-title">🔮 Strategy & Efficiency</h2>
+            <p class="step-description">Help us understand your strategic challenges and opportunities.</p>
+            
+            <div class="form-group">
+                <label class="form-label" for="profitBarriers">What's your biggest barrier to higher profits right now?</label>
+                <div class="voice-input-container">
+                    <textarea id="profitBarriers" class="form-textarea" placeholder="Describe your main profit barriers" rows="3"></textarea>
+                    <button type="button" class="mic-button" onmousedown="startVoiceInput('profitBarriers')" onmouseup="stopVoiceInput()" onmouseleave="stopVoiceInput()" title="Hold to speak">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        </svg>
+                    </button>
+                    <div class="voice-status" id="voiceStatus-profitBarriers"></div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="unitEconomics">Do you track unit economics (profit per customer/product)?</label>
+                <select id="unitEconomics" class="form-select">
+                    <option value="">Select tracking level</option>
+                    <option value="comprehensive">Yes, comprehensive tracking</option>
+                    <option value="basic">Basic tracking</option>
+                    <option value="minimal">Minimal tracking</option>
+                    <option value="none">No tracking</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="costRevenueOpportunities">Where do you see opportunities to cut costs or expand revenue?</label>
+                <div class="voice-input-container">
+                    <textarea id="costRevenueOpportunities" class="form-textarea" placeholder="Describe potential opportunities" rows="3"></textarea>
+                    <button type="button" class="mic-button" onmousedown="startVoiceInput('costRevenueOpportunities')" onmouseup="stopVoiceInput()" onmouseleave="stopVoiceInput()" title="Hold to speak">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        </svg>
+                    </button>
+                    <div class="voice-status" id="voiceStatus-costRevenueOpportunities"></div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="financialTools">What systems/tools are you currently using for financial tracking?</label>
+                <input type="text" id="financialTools" class="form-input" placeholder="e.g., QuickBooks, Excel, custom software">
+            </div>
+        </div>
+
+        <!-- Step 10: Financial/Operational Data -->
+        <div class="step-container" id="step10">
+            <div class="step-header">
+                <div class="step-number">Step 10</div>
+            </div>
+            <h2 class="step-title">📊 Financial/Operational Data</h2>
+            <p class="step-description">Upload your financial and operational documents for analysis.</p>
+            
+            <div class="form-group">
+                <label class="form-label">Upload Documents (Optional but Recommended)</label>
+                <div class="file-upload-area" id="financialUploadArea">
+                    <div class="upload-icon">📄</div>
+                    <div class="upload-text">Drop files here or click to upload</div>
+                    <div class="upload-subtext">Invoices, expense receipts, inventory reports, CRM exports, marketing reports, POS exports</div>
+                    <input type="file" id="financialFiles" multiple accept=".pdf,.xlsx,.csv,.doc,.docx" style="display: none;">
+                </div>
+                <div class="file-list" id="financialFileList"></div>
+            </div>
+        </div>
+
+        <!-- Step 11: Customer & Market Data -->
+        <div class="step-container" id="step11">
+            <div class="step-header">
+                <div class="step-number">Step 11</div>
+            </div>
+            <h2 class="step-title">👥 Customer & Market Data</h2>
+            <p class="step-description">Upload customer and market research data.</p>
+            
+            <div class="form-group">
+                <label class="form-label">Upload Customer Data (Optional)</label>
+                <div class="file-upload-area" id="customerUploadArea">
+                    <div class="upload-icon">👥</div>
+                    <div class="upload-text">Drop files here or click to upload</div>
+                    <div class="upload-subtext">Customer feedback surveys, NPS reports, support tickets, loyalty program data</div>
+                    <input type="file" id="customerFiles" multiple accept=".pdf,.xlsx,.csv,.doc,.docx" style="display: none;">
+                </div>
+                <div class="file-list" id="customerFileList"></div>
+            </div>
+        </div>
+
+        <!-- Step 12: Strategic Docs -->
+        <div class="step-container" id="step12">
+            <div class="step-header">
+                <div class="step-number">Step 12</div>
+            </div>
+            <h2 class="step-title">📑 Strategic Docs</h2>
+            <p class="step-description">Upload strategic documents and contracts.</p>
+            
+            <div class="form-group">
+                <label class="form-label">Upload Strategic Documents (Optional)</label>
+                <div class="file-upload-area" id="strategicUploadArea">
+                    <div class="upload-icon">📑</div>
+                    <div class="upload-text">Drop files here or click to upload</div>
+                    <div class="upload-subtext">Business plans, pitch decks, vendor contracts, competitor benchmark reports</div>
+                    <input type="file" id="strategicFiles" multiple accept=".pdf,.xlsx,.csv,.doc,.docx" style="display: none;">
+                </div>
+                <div class="file-list" id="strategicFileList"></div>
+            </div>
+        </div>
+
+        <!-- Step 13: Marketing & Social Media -->
+        <div class="step-container" id="step13">
+            <div class="step-header">
+                <div class="step-number">Step 13</div>
+            </div>
+            <h2 class="step-title">📢 Marketing & Social Media</h2>
+            <p class="step-description">Provide your social media and marketing links for analysis.</p>
+            
+            <div class="form-group">
+                <label class="form-label" for="linkedinPage">LinkedIn company page</label>
+                <input type="url" id="linkedinPage" class="form-input" placeholder="https://linkedin.com/company/yourcompany">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="twitterHandle">Twitter/X handle</label>
+                <input type="text" id="twitterHandle" class="form-input" placeholder="@yourcompany">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="instagramAccount">Instagram account</label>
+                <input type="text" id="instagramAccount" class="form-input" placeholder="@yourcompany">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="facebookPage">Facebook page</label>
+                <input type="url" id="facebookPage" class="form-input" placeholder="https://facebook.com/yourcompany">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="tiktokYoutube">TikTok/YouTube (if used for branding/ads)</label>
+                <input type="text" id="tiktokYoutube" class="form-input" placeholder="TikTok/YouTube handles or links">
+            </div>
+        </div>
+
+        <!-- Step 14: Reputation & Reviews -->
+        <div class="step-container" id="step14">
+            <div class="step-header">
+                <div class="step-number">Step 14</div>
+            </div>
+            <h2 class="step-title">⭐ Reputation & Reviews</h2>
+            <p class="step-description">Provide your review and reputation platform links.</p>
+            
+            <div class="form-group">
+                <label class="form-label" for="yelpProfile">Yelp, Trustpilot, or BBB profile</label>
+                <input type="url" id="yelpProfile" class="form-input" placeholder="https://yelp.com/biz/yourcompany">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="googleBusiness">Google Business Profile link</label>
+                <input type="url" id="googleBusiness" class="form-input" placeholder="https://g.page/yourcompany">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="glassdoor">Glassdoor (for employee satisfaction → retention cost risk)</label>
+                <input type="url" id="glassdoor" class="form-input" placeholder="https://glassdoor.com/Overview/Working-at-YourCompany">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="appStoreReviews">App Store / Play Store reviews (if they have a mobile app)</label>
+                <input type="url" id="appStoreReviews" class="form-input" placeholder="App Store or Play Store link">
+            </div>
+        </div>
+
+        <!-- Step 15: Analytics & Tools -->
+        <div class="step-container" id="step15">
+            <div class="step-header">
+                <div class="step-number">Step 15</div>
+            </div>
+            <h2 class="step-title">📈 Analytics & Tools</h2>
+            <p class="step-description">Provide access to your analytics and business tools.</p>
+            
+            <div class="form-group">
+                <label class="form-label" for="googleAnalytics">Google Analytics / Search Console access (web traffic insights)</label>
+                <input type="text" id="googleAnalytics" class="form-input" placeholder="Google Analytics property ID or Search Console URL">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="seoTools">SEMrush / Ahrefs (if they track SEO)</label>
+                <input type="text" id="seoTools" class="form-input" placeholder="SEMrush or Ahrefs project URL">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="ecommercePlatforms">Shopify/Magento/Stripe/PayPal links (to scrape sales data)</label>
+                <input type="text" id="ecommercePlatforms" class="form-input" placeholder="E-commerce platform URLs">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="adPlatforms">LinkedIn Ads / Meta Ads library (for competitive ad scraping)</label>
+                <input type="text" id="adPlatforms" class="form-input" placeholder="Ad platform URLs or handles">
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-secondary" id="prevBtn" onclick="previousStep()" style="display: none;">
+                Previous
+            </button>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">
+                Next
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const categories = [
+            { name: "Farming & Animal Production", description: "All crop & animal production" },
+            { name: "Forestry, Logging & Timber", description: "Timber harvesting and forest management" },
+            { name: "Fishing & Aquaculture", description: "Commercial fishing and fish farming" },
+            { name: "Mining, Quarrying & Oil/Gas", description: "Extraction of natural resources" },
+            { name: "Utilities", description: "Electric, gas, water, and waste management" },
+            { name: "Construction Contractors", description: "Building and infrastructure construction" },
+            { name: "Real Estate, Rental & Leasing", description: "Property management and leasing services" },
+            { name: "Food & Beverage Manufacturing", description: "Food and drink production" },
+            { name: "Light/General Manufacturing", description: "General manufacturing and production" },
+            { name: "Industrial Supply, MRO & Wholesalers", description: "Industrial supplies and wholesale trade" },
+            { name: "Trucking, Couriers & Delivery", description: "Transportation and logistics services" },
+            { name: "Warehousing & Storage", description: "Storage and distribution facilities" },
+            { name: "Grocery & Food Retail", description: "Supermarkets, convenience, specialty foods" },
+            { name: "Pharmacies & Drug Stores", description: "Pharmaceutical retail and services" },
+            { name: "General Retail (Nonfood)", description: "Electronics, apparel, furniture, and other retail" },
+            { name: "Gas Stations & Travel Centers", description: "Fuel stations and travel services" },
+            { name: "Restaurants & Foodservice", description: "Full-service, fast casual, QSR, coffee, bakeries" },
+            { name: "Bars, Breweries, Wineries, Distilleries", description: "Alcohol production and serving venues" },
+            { name: "Hotels & Lodging", description: "Accommodation and hospitality services" },
+            { name: "Physicians & Clinics", description: "Medical practice and healthcare services" },
+            { name: "Dentists", description: "Dental care and oral health services" },
+            { name: "Other Health Practitioners", description: "Chiropractic, physical therapy, optometry, and other health services" },
+            { name: "Outpatient Care, Labs & Imaging", description: "Medical testing and outpatient services" },
+            { name: "Home Health & Hospice", description: "In-home healthcare and end-of-life care" },
+            { name: "Hospitals", description: "Medical facilities and hospital services" },
+            { name: "Nursing & Residential Care", description: "Long-term care and assisted living" },
+            { name: "Fitness & Wellness Studios", description: "Gyms, yoga, personal training, and wellness" },
+            { name: "Accounting, Bookkeeping & Tax", description: "Financial record keeping and tax services" },
+            { name: "Legal Services", description: "Legal advice and representation" },
+            { name: "Architecture, Engineering & Surveying", description: "Design and technical consulting services" },
+            { name: "Design, Marketing & Advertising", description: "Creative services and marketing solutions" },
+            { name: "IT Services, MSP & Cybersecurity", description: "Technology support and security services" },
+            { name: "Software & SaaS", description: "Software development and cloud services" },
+            { name: "Management & HR Consulting", description: "Business consulting and human resources" },
+            { name: "R&D, Labs & Testing", description: "Research, development, and testing services" },
+            { name: "Recruiting & Staffing", description: "Employment and talent acquisition services" },
+            { name: "Business Support & Call Centers", description: "Customer service and business process outsourcing" },
+            { name: "Facilities Services & Janitorial", description: "Cleaning and facility maintenance services" },
+            { name: "Security & Investigations", description: "Security services and private investigation" },
+            { name: "Banks & Credit Unions", description: "Financial institutions and banking services" },
+            { name: "Lenders & Mortgage Brokers", description: "Loan services and mortgage brokerage" },
+            { name: "Investment & Wealth Management", description: "Financial planning and investment services" },
+            { name: "Insurance Agencies & Carriers", description: "Insurance products and risk management" },
+            { name: "Title & Escrow", description: "Real estate transaction services" },
+            { name: "Schools, Colleges & Universities", description: "Educational institutions and academic services" },
+            { name: "Tutoring, Test Prep & Training", description: "Educational support and professional training" },
+            { name: "Childcare & Daycare", description: "Early childhood education and care services" },
+            { name: "Arts, Culture & Museums", description: "Cultural institutions and artistic services" },
+            { name: "Entertainment & Family Recreation", description: "Recreation and entertainment venues" },
+            { name: "Sports Clubs & Promoters", description: "Athletic facilities and sports promotion" },
+            { name: "Salons, Barbers & Spas", description: "Personal care and beauty services" },
+            { name: "Dry Cleaning & Laundry", description: "Clothing care and cleaning services" },
+            { name: "Repair Services (Non-Auto)", description: "Equipment and appliance repair services" },
+            { name: "Photographers & Creative Studios", description: "Photography and creative production services" },
+            { name: "Funeral Homes & Cemeteries", description: "Funeral and memorial services" },
+            { name: "Pet Care & Grooming", description: "Animal care and grooming services" },
+            { name: "Auto Dealers (New/Used)", description: "Vehicle sales and dealership services" },
+            { name: "Auto Repair & Tire", description: "Automotive maintenance and repair" },
+            { name: "Car Wash & Quick Lube", description: "Vehicle cleaning and maintenance services" },
+            { name: "Towing & Roadside", description: "Vehicle recovery and roadside assistance" },
+            { name: "3PL, Logistics Tech & Freight Brokers", description: "Third-party logistics and freight services" },
+            { name: "E‑commerce & Online Marketplaces", description: "Online retail and digital commerce platforms" },
+            { name: "Newspapers, Radio & TV", description: "Broadcast media and news services" },
+            { name: "Publishers & Content Studios", description: "Content creation and publishing services" },
+            { name: "Advertising, PR & OOH", description: "Marketing communications and public relations" },
+            { name: "Signage, Print & Graphics", description: "Visual communication and printing services" },
+            { name: "Government Agencies", description: "Public sector and government services" },
+            { name: "Nonprofits & Foundations", description: "Charitable organizations and foundations" },
+            { name: "Trade & Professional Associations", description: "Industry organizations and professional groups" },
+            { name: "Solar, EV & Energy Services", description: "Renewable energy and electric vehicle services" },
+            { name: "Environmental Services & Remediation", description: "Environmental consulting and cleanup services" },
+            { name: "Waste Management & Recycling", description: "Waste collection and recycling services" },
+            { name: "Storage & Moving", description: "Storage facilities and relocation services" },
+            { name: "Event Venues & Services", description: "Event planning and venue services" }
+        ];
+
+        let currentStep = 1;
+        let selectedCategory = null;
+        let uploadedFiles = [];
+
+        // Voice Recognition Variables
+        let recognition = null;
+        let isRecording = false;
+        let currentField = null;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            setupCategoryDropdown();
+            setupFileUpload();
+            initializeVoiceRecognition();
+        });
+
+        function initializeVoiceRecognition() {
+            // Check if browser supports speech recognition
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = function() {
+                    isRecording = true;
+                    updateMicButton(currentField, 'recording');
+                    showVoiceStatus(currentField, 'Listening...');
+                };
+
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    if (currentField) {
+                        const field = document.getElementById(currentField);
+                        if (field) {
+                            if (field.tagName === 'TEXTAREA') {
+                                field.value += (field.value ? ' ' : '') + transcript;
+                            } else {
+                                field.value = transcript;
+                            }
+                        }
+                    }
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    showVoiceStatus(currentField, 'Error: ' + event.error);
+                    updateMicButton(currentField, 'idle');
+                    isRecording = false;
+                };
+
+                recognition.onend = function() {
+                    isRecording = false;
+                    updateMicButton(currentField, 'idle');
+                    hideVoiceStatus(currentField);
+                };
+            } else {
+                console.log('Speech recognition not supported in this browser');
+                // Hide all mic buttons if not supported
+                document.querySelectorAll('.mic-button').forEach(btn => {
+                    btn.style.display = 'none';
+                });
+            }
+        }
+
+        function startVoiceInput(fieldId) {
+            if (!recognition) {
+                alert('Voice input is not supported in your browser. Please use a modern browser like Chrome or Edge.');
+                return;
+            }
+
+            if (isRecording) {
+                return; // Already recording, ignore
+            }
+
+            currentField = fieldId;
+            recognition.start();
+        }
+
+        function stopVoiceInput() {
+            if (recognition && isRecording) {
+                recognition.stop();
+            }
+        }
+
+        function updateMicButton(fieldId, state) {
+            if (!fieldId) return;
+            
+            const micButton = document.querySelector(`button[onmousedown="startVoiceInput('${fieldId}')"]`);
+            if (micButton) {
+                micButton.className = `mic-button ${state}`;
+                if (state === 'recording') {
+                    micButton.innerHTML = `
+                        <svg viewBox="0 0 24 24">
+                            <rect x="6" y="6" width="12" height="12" rx="2"/>
+                        </svg>
+                    `;
+                } else if (state === 'processing') {
+                    micButton.innerHTML = `
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                    `;
+                } else {
+                    micButton.innerHTML = `
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        </svg>
+                    `;
+                }
+            }
+        }
+
+        function showVoiceStatus(fieldId, message) {
+            if (!fieldId) return;
+            
+            const status = document.getElementById(`voiceStatus-${fieldId}`);
+            if (status) {
+                status.textContent = message;
+                status.classList.add('show');
+                
+                // Auto-hide after 3 seconds
+                setTimeout(() => {
+                    hideVoiceStatus(fieldId);
+                }, 3000);
+            }
+        }
+
+        function hideVoiceStatus(fieldId) {
+            if (!fieldId) return;
+            
+            const status = document.getElementById(`voiceStatus-${fieldId}`);
+            if (status) {
+                status.classList.remove('show');
+            }
+        }
+
+        function setupCategoryDropdown() {
+            const searchInput = document.getElementById('categorySearch');
+            const dropdown = document.getElementById('categoryDropdown');
+            
+            // Populate dropdown with all categories
+            populateDropdown(categories);
+            
+            // Handle search input
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const filteredCategories = categories.filter(category => 
+                    category.name.toLowerCase().includes(searchTerm) || 
+                    category.description.toLowerCase().includes(searchTerm)
+                );
+                populateDropdown(filteredCategories);
+                dropdown.classList.add('show');
+            });
+            
+            // Handle input focus
+            searchInput.addEventListener('focus', function() {
+                dropdown.classList.add('show');
+            });
+            
+            // Handle clicks outside to close dropdown
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.searchable-dropdown')) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        }
+
+        function populateDropdown(categoriesToShow) {
+            const dropdown = document.getElementById('categoryDropdown');
+            dropdown.innerHTML = '';
+            
+            categoriesToShow.forEach(category => {
+                const item = document.createElement('div');
+                item.className = 'dropdown-item';
+                item.innerHTML = `
+                    <div class="dropdown-item-name">${category.name}</div>
+                    <div class="dropdown-item-description">${category.description}</div>
+                `;
+                item.onclick = () => selectCategory(category.name, item);
+                dropdown.appendChild(item);
+            });
+        }
+
+        function selectCategory(categoryName, itemElement) {
+            const searchInput = document.getElementById('categorySearch');
+            const dropdown = document.getElementById('categoryDropdown');
+            
+            // Update input with selected category
+            searchInput.value = categoryName;
+            selectedCategory = categoryName;
+            
+            // Close dropdown
+            dropdown.classList.remove('show');
+        }
+
+        function setupFileUpload() {
+            const fileUploadArea = document.getElementById('fileUploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const fileList = document.getElementById('fileList');
+
+            fileUploadArea.addEventListener('click', () => fileInput.click());
+            
+            fileUploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUploadArea.classList.add('dragover');
+            });
+            
+            fileUploadArea.addEventListener('dragleave', () => {
+                fileUploadArea.classList.remove('dragover');
+            });
+            
+            fileUploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUploadArea.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+        }
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (isValidFile(file)) {
+                    uploadedFiles.push(file);
+                    displayFile(file);
+                }
+            });
+        }
+
+        function isValidFile(file) {
+            const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+            return validTypes.includes(file.type);
+        }
+
+        function displayFile(file) {
+            const fileList = document.getElementById('fileList');
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.innerHTML = `
+                <span class="file-name">${file.name}</span>
+                <button class="file-remove" onclick="removeFile('${file.name}')">Remove</button>
+            `;
+            fileList.appendChild(fileItem);
+        }
+
+        function removeFile(fileName) {
+            uploadedFiles = uploadedFiles.filter(file => file.name !== fileName);
+            const fileList = document.getElementById('fileList');
+            const items = fileList.querySelectorAll('.file-item');
+            items.forEach(item => {
+                if (item.querySelector('.file-name').textContent === fileName) {
+                    item.remove();
+                }
+            });
+        }
+
+        function nextStep() {
+            if (validateCurrentStep()) {
+                if (currentStep < 15) {
+                    document.getElementById(`step${currentStep}`).classList.remove('active');
+                    currentStep++;
+                    document.getElementById(`step${currentStep}`).classList.add('active');
+                    updateButtons();
+                } else {
+                    // Submit the form
+                    submitOnboarding();
+                }
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                currentStep--;
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                updateButtons();
+            }
+        }
+
+        function validateCurrentStep() {
+            switch(currentStep) {
+                case 1:
+                    if (!selectedCategory) {
+                        alert('Please select a business category');
+                        return false;
+                    }
+                    return true;
+                case 2:
+                    const businessName = document.getElementById('businessName').value.trim();
+                    if (!businessName) {
+                        alert('Please enter your business name');
+                        return false;
+                    }
+                    return true;
+                case 3:
+                    // File upload is optional
+                    return true;
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                case 10:
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                case 15:
+                    // All financial and business data is optional but recommended
+                    return true;
+                default:
+                    return true;
+            }
+        }
+
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.style.display = currentStep > 1 ? 'block' : 'none';
+            
+            if (currentStep === 15) {
+                nextBtn.textContent = 'Complete Setup';
+            } else {
+                nextBtn.textContent = 'Next';
+            }
+        }
+
+
+        function submitOnboarding() {
+            const formData = {
+                category: selectedCategory,
+                businessName: document.getElementById('businessName').value.trim(),
+                websiteUrl: document.getElementById('websiteUrl').value.trim(),
+                files: uploadedFiles.map(file => ({
+                    name: file.name,
+                    size: file.size,
+                    type: file.type
+                })),
+                financialData: {
+                    // Revenue data
+                    monthlyRevenue: document.getElementById('monthlyRevenue')?.value || '',
+                    revenueModel: document.getElementById('revenueModel')?.value || '',
+                    topRevenueSources: document.getElementById('topRevenueSources')?.value || '',
+                    revenueType: document.getElementById('revenueType')?.value || '',
+                    seasonality: document.getElementById('seasonality')?.value || '',
+                    
+                    // Costs data
+                    directCosts: document.getElementById('directCosts')?.value || '',
+                    topSuppliers: document.getElementById('topSuppliers')?.value || '',
+                    operatingExpenses: document.getElementById('operatingExpenses')?.value || '',
+                    fastestGrowingExpenses: document.getElementById('fastestGrowingExpenses')?.value || '',
+                    wasteTracking: document.getElementById('wasteTracking')?.value || '',
+                    
+                    // Customer data
+                    customerAcquisitionCost: document.getElementById('customerAcquisitionCost')?.value || '',
+                    revenuePerCustomer: document.getElementById('revenuePerCustomer')?.value || '',
+                    customerRetention: document.getElementById('customerRetention')?.value || '',
+                    topCustomers: document.getElementById('topCustomers')?.value || '',
+                    
+                    // Growth & Pricing
+                    lastPriceChange: document.getElementById('lastPriceChange')?.value || '',
+                    discountImpact: document.getElementById('discountImpact')?.value || '',
+                    leadGeneration: document.getElementById('leadGeneration')?.value || '',
+                    upsellCrossSell: document.getElementById('upsellCrossSell')?.value || '',
+                    
+                    // Cash Flow & Debt
+                    cashFlow: document.getElementById('cashFlow')?.value || '',
+                    cashShortages: document.getElementById('cashShortages')?.value || '',
+                    debtLoans: document.getElementById('debtLoans')?.value || '',
+                    
+                    // Strategy & Efficiency
+                    profitBarriers: document.getElementById('profitBarriers')?.value || '',
+                    unitEconomics: document.getElementById('unitEconomics')?.value || '',
+                    costRevenueOpportunities: document.getElementById('costRevenueOpportunities')?.value || '',
+                    financialTools: document.getElementById('financialTools')?.value || '',
+                    
+                    // Social Media & Marketing
+                    linkedinPage: document.getElementById('linkedinPage')?.value || '',
+                    twitterHandle: document.getElementById('twitterHandle')?.value || '',
+                    instagramAccount: document.getElementById('instagramAccount')?.value || '',
+                    facebookPage: document.getElementById('facebookPage')?.value || '',
+                    tiktokYoutube: document.getElementById('tiktokYoutube')?.value || '',
+                    
+                    // Reputation & Reviews
+                    yelpProfile: document.getElementById('yelpProfile')?.value || '',
+                    googleBusiness: document.getElementById('googleBusiness')?.value || '',
+                    glassdoor: document.getElementById('glassdoor')?.value || '',
+                    appStoreReviews: document.getElementById('appStoreReviews')?.value || '',
+                    
+                    // Analytics & Tools
+                    googleAnalytics: document.getElementById('googleAnalytics')?.value || '',
+                    seoTools: document.getElementById('seoTools')?.value || '',
+                    ecommercePlatforms: document.getElementById('ecommercePlatforms')?.value || '',
+                    adPlatforms: document.getElementById('adPlatforms')?.value || ''
+                }
+            };
+
+            // Show loading state
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.textContent = 'Setting up...';
+            nextBtn.disabled = true;
+
+            // Submit to server
+            fetch('/submit_onboarding', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Redirect to dashboard
+                    window.location.href = '/dashboard';
+                } else {
+                    alert('Error: ' + data.message);
+                    nextBtn.textContent = 'Complete Setup';
+                    nextBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+                nextBtn.textContent = 'Complete Setup';
+                nextBtn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>

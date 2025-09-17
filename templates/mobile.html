@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ProfitWise - AI-Powered Financial Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Times+New+Roman:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='profitwiseicon1.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
+</head>
+<body>
+    <!-- Mobile Main Content -->
+    <div id="mobileMainContent" class="mobile-main-content">
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <div class="mobile-header-content">
+                <img src="{{ url_for('static', filename='profitwiseicon1.png') }}" alt="ProfitWise" class="mobile-header-logo" id="mobileUserLoginButton" title="User Login">
+                <button id="mobileMenuButton" class="mobile-menu-button">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Mobile Hero Section -->
+        <section class="mobile-hero" id="mobileHeroSection">
+            <div class="mobile-hero-background">
+                <video id="mobileHeroVideo" class="mobile-hero-video" autoplay muted loop playsinline webkit-playsinline>
+                    <source src="{{ url_for('static', filename='profitwiseload.mp4') }}" type="video/mp4">
+                </video>
+                <div class="mobile-hero-overlay"></div>
+            </div>
+            
+            <div class="mobile-hero-content">
+                <h1 class="mobile-hero-title">Unlock Your Business Potential with AI</h1>
+                <p class="mobile-hero-description">Transform your financial data into actionable insights with our cutting-edge AI technology.</p>
+                <div class="mobile-hero-buttons">
+                    <a href="/login" class="mobile-cta-button">
+                        <img src="{{ url_for('static', filename='profitwiseicon1.png') }}" alt="ProfitWise Icon" class="mobile-button-icon">
+                        <span>Join Waitlist</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mobile Story Section -->
+        <section class="mobile-story" id="mobileStorySection">
+            <div class="mobile-story-container">
+                <div class="mobile-story-content">
+                    <h2 class="mobile-story-title">Our Story</h2>
+                    <div class="mobile-story-text">
+                        <p>In a world where data flows like water, but insights remain as rare as diamonds, we saw an opportunity to bridge the gap between raw information and actionable intelligence.</p>
+                        <p>ProfitWise was born from a simple yet powerful vision: to democratize advanced AI technology for businesses of all sizes, making sophisticated financial analysis accessible to everyone.</p>
+                        <p>Our AI doesn't just process numbers—it understands context, identifies patterns, and reveals opportunities that human analysis might miss.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mobile Features Section -->
+        <section class="mobile-features" id="mobileFeaturesSection">
+            <div class="mobile-features-container">
+                <h2 class="mobile-features-title">Why Choose ProfitWise?</h2>
+                <div class="mobile-features-grid">
+                    <div class="mobile-feature-card">
+                        <div class="mobile-feature-icon">🤖</div>
+                        <h3>AI-Powered Analysis</h3>
+                        <p>Advanced machine learning algorithms analyze your data to uncover hidden patterns and opportunities.</p>
+                    </div>
+                    <div class="mobile-feature-card">
+                        <div class="mobile-feature-icon">📊</div>
+                        <h3>Real-Time Insights</h3>
+                        <p>Get instant, actionable insights that help you make informed decisions faster than ever.</p>
+                    </div>
+                    <div class="mobile-feature-card">
+                        <div class="mobile-feature-icon">🔒</div>
+                        <h3>Secure & Private</h3>
+                        <p>Your data is protected with enterprise-grade security and never shared with third parties.</p>
+                    </div>
+                    <div class="mobile-feature-card">
+                        <div class="mobile-feature-icon">⚡</div>
+                        <h3>Lightning Fast</h3>
+                        <p>Process complex financial data in seconds, not hours, with our optimized AI engine.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mobile Video Section -->
+        <section class="mobile-video-section" id="mobileVideoSection">
+            <div class="mobile-video-container">
+                <video id="mobileBackgroundVideo" class="mobile-background-video" autoplay muted loop playsinline webkit-playsinline>
+                    <source src="{{ url_for('static', filename='background2.mp4') }}" type="video/mp4">
+                </video>
+                <div class="mobile-video-overlay"></div>
+                <div class="mobile-video-content">
+                    <h2 class="mobile-video-title">Our AI sees beyond the chaos</h2>
+                    <p class="mobile-video-description">It finds the hidden connections that unlock maximum potential for your business.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mobile Waitlist Section -->
+        <section class="mobile-waitlist" id="mobileWaitlistSection">
+            <div class="mobile-waitlist-container">
+                <div class="mobile-waitlist-content">
+                    <h2 class="mobile-waitlist-title">Be the First to Experience ProfitWise</h2>
+                    <p class="mobile-waitlist-description">Join our exclusive waitlist and get early access to the future of business intelligence.</p>
+                    
+                    <form id="mobileWaitlistForm" class="mobile-waitlist-form">
+                        <div class="mobile-form-row">
+                            <input type="text" class="mobile-form-input" id="mobileNameInput" placeholder="Your Name" required>
+                            <input type="email" class="mobile-form-input" id="mobileEmailInput" placeholder="Email Address" required>
+                        </div>
+                        <button type="submit" class="mobile-waitlist-button" id="mobileSubmitButton">
+                            <img src="{{ url_for('static', filename='profitwiseicon1.png') }}" alt="ProfitWise Icon" class="mobile-waitlist-icon">
+                            <span class="mobile-waitlist-button-text">Join Waitlist</span>
+                        </button>
+                        <div id="mobileFormMessage" class="mobile-form-message" style="display: none;"></div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mobile Footer -->
+        <footer class="mobile-footer">
+            <div class="mobile-footer-content">
+                <div class="mobile-footer-section">
+                    <h3>ProfitWise</h3>
+                    <p>Transforming business intelligence with AI-powered insights.</p>
+                </div>
+                <div class="mobile-footer-section">
+                    <h3>Quick Links</h3>
+                    <a href="#mobileStorySection">Our Story</a>
+                    <a href="#mobileFeaturesSection">Features</a>
+                    <a href="#mobileWaitlistSection">Join Waitlist</a>
+                </div>
+                <div class="mobile-footer-section">
+                    <h3>Contact</h3>
+                    <p>hello@profitwise.app</p>
+                    <p>Ready to transform your business?</p>
+                </div>
+            </div>
+            <div class="mobile-footer-bottom">
+                <p>&copy; 2024 ProfitWise. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay">
+        <div class="mobile-menu-content">
+            <div class="mobile-menu-header">
+                <img src="{{ url_for('static', filename='profitwiseicon1.png') }}" alt="ProfitWise" class="mobile-menu-logo">
+                <button id="mobileMenuClose" class="mobile-menu-close">×</button>
+            </div>
+            <nav class="mobile-menu-nav">
+                <a href="#mobileStorySection" class="mobile-menu-link">Our Story</a>
+                <a href="#mobileFeaturesSection" class="mobile-menu-link">Features</a>
+                <a href="#mobileVideoSection" class="mobile-menu-link">AI Vision</a>
+                <a href="#mobileWaitlistSection" class="mobile-menu-link">Join Waitlist</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Mobile User Login Modal -->
+    <div id="mobileUserLoginModal" class="mobile-login-modal">
+        <div class="mobile-login-modal-content">
+            <div class="mobile-login-modal-header">
+                <h2>Welcome to ProfitWise</h2>
+                <button id="mobileCloseLoginModal" class="mobile-close-login-modal">&times;</button>
+            </div>
+            <div class="mobile-login-modal-body">
+                <p>Sign in to access your personalized dashboard and AI insights.</p>
+                <form id="mobileUserLoginForm" class="mobile-login-form">
+                    <div class="mobile-form-group">
+                        <label for="mobileUserEmail">Email Address</label>
+                        <input type="email" id="mobileUserEmail" name="email" required>
+                    </div>
+                    <div class="mobile-form-group">
+                        <label for="mobileUserPassword">Password</label>
+                        <input type="password" id="mobileUserPassword" name="password" required>
+                    </div>
+                    <button type="submit" class="mobile-login-submit-button">
+                        <img src="{{ url_for('static', filename='profitwiseicon1.png') }}" alt="ProfitWise Icon" class="mobile-login-button-icon">
+                        <span>Sign In</span>
+                    </button>
+                    <div class="mobile-login-links">
+                        <a href="#" id="mobileForgotPasswordLink">Forgot Password?</a>
+                        <a href="#" id="mobileCreateAccountLink">Create Account</a>
+                    </div>
+                </form>
+                <div id="mobileLoginMessage" class="mobile-login-message" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/mobile.js') }}"></script>
+</body>
+</html>
