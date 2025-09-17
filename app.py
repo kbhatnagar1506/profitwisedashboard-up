@@ -429,7 +429,7 @@ def user_login():
 
 @app.route('/dashboard')
 def dashboard():
-    """User dashboard"""
+    """User dashboard - serve Next.js dashboard"""
     if not session.get('user_authenticated'):
         return redirect(url_for('index'))
     
@@ -442,12 +442,272 @@ def dashboard():
         # Redirect to onboarding if no business data
         return redirect(url_for('onboarding_page'))
     
-    # Pass business data to template
-    return render_template('dashboard.html',
-                         business_name=user_business.get('business_name'),
-                         category=user_business.get('category'),
-                         website_url=user_business.get('website_url'),
-                         created_at=user_business.get('created_at'))
+    # Serve the Next.js dashboard HTML
+    return f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title>ProfitWise Dashboard - AI-Powered Business Intelligence</title>
+        <meta name="description" content="Comprehensive business analytics and AI-powered insights to optimize your business performance and growth."/>
+        <link rel="icon" href="/static/favicon.ico" sizes="256x256" type="image/x-icon"/>
+        <style>
+            body {{
+                margin: 0;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                background: #0a0a0a;
+                color: #ededed;
+            }}
+            .dashboard-container {{
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }}
+            .dashboard-header {{
+                background: #1a1a1a;
+                border-bottom: 1px solid #262626;
+                padding: 1rem 2rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }}
+            .dashboard-logo {{
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }}
+            .dashboard-logo h1 {{
+                margin: 0;
+                font-size: 1.5rem;
+                font-weight: 700;
+                background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }}
+            .dashboard-content {{
+                flex: 1;
+                padding: 2rem;
+                display: grid;
+                grid-template-columns: 250px 1fr;
+                gap: 2rem;
+            }}
+            .sidebar {{
+                background: #1a1a1a;
+                border-radius: 12px;
+                padding: 1.5rem;
+                height: fit-content;
+            }}
+            .sidebar h2 {{
+                margin: 0 0 1rem 0;
+                font-size: 1.25rem;
+                color: #f8fafc;
+            }}
+            .sidebar p {{
+                margin: 0 0 2rem 0;
+                color: #94a3b8;
+                font-size: 0.875rem;
+            }}
+            .nav-item {{
+                display: block;
+                padding: 0.75rem 1rem;
+                margin: 0.25rem 0;
+                color: #94a3b8;
+                text-decoration: none;
+                border-radius: 8px;
+                transition: all 0.2s;
+            }}
+            .nav-item:hover {{
+                background: #262626;
+                color: #f8fafc;
+            }}
+            .nav-item.active {{
+                background: #3b82f6;
+                color: white;
+            }}
+            .main-content {{
+                background: #1a1a1a;
+                border-radius: 12px;
+                padding: 2rem;
+            }}
+            .business-health {{
+                background: linear-gradient(135deg, #10b981, #059669);
+                border-radius: 12px;
+                padding: 2rem;
+                margin-bottom: 2rem;
+                color: white;
+            }}
+            .health-score {{
+                font-size: 3rem;
+                font-weight: 700;
+                margin: 0;
+            }}
+            .metrics-grid {{
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+                margin: 2rem 0;
+            }}
+            .metric-card {{
+                background: #262626;
+                padding: 1.5rem;
+                border-radius: 8px;
+                text-align: center;
+            }}
+            .metric-value {{
+                font-size: 2rem;
+                font-weight: 700;
+                margin: 0;
+                color: #f8fafc;
+            }}
+            .metric-label {{
+                color: #94a3b8;
+                font-size: 0.875rem;
+                margin: 0.5rem 0 0 0;
+            }}
+            .quick-actions {{
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 1rem;
+                margin-top: 2rem;
+            }}
+            .action-btn {{
+                background: #262626;
+                border: 1px solid #404040;
+                color: #f8fafc;
+                padding: 1rem;
+                border-radius: 8px;
+                text-decoration: none;
+                text-align: center;
+                transition: all 0.2s;
+            }}
+            .action-btn:hover {{
+                background: #3b82f6;
+                border-color: #3b82f6;
+            }}
+            .logout-btn {{
+                background: #dc2626;
+                color: white;
+                border: none;
+                padding: 0.75rem 1.5rem;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 600;
+            }}
+            .logout-btn:hover {{
+                background: #b91c1c;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <div class="dashboard-logo">
+                    <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <span style="color: white; font-weight: 700;">P</span>
+                    </div>
+                    <h1>ProfitWise Dashboard</h1>
+                </div>
+                <button class="logout-btn" onclick="window.location.href='/user_logout'">Logout</button>
+            </div>
+            
+            <div class="dashboard-content">
+                <div class="sidebar">
+                    <h2>Business Intelligence</h2>
+                    <p>AI-Powered Dashboard</p>
+                    
+                    <a href="#" class="nav-item active">Overview</a>
+                    <a href="#" class="nav-item">Financial Analytics</a>
+                    <a href="#" class="nav-item">Customer Intelligence</a>
+                    <a href="#" class="nav-item">Growth Opportunities</a>
+                    <a href="#" class="nav-item">Cash Flow</a>
+                    <a href="#" class="nav-item">Social Media</a>
+                    <a href="#" class="nav-item">AI Recommendations</a>
+                    <a href="#" class="nav-item">AI Chat</a>
+                    <a href="#" class="nav-item">Business Health</a>
+                    <a href="#" class="nav-item">Settings</a>
+                    
+                    <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #404040;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="color: #94a3b8; font-size: 0.875rem;">Health Score</span>
+                            <span style="color: #10b981; font-weight: 600;">85%</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="color: #94a3b8; font-size: 0.875rem;">Active Alerts</span>
+                            <span style="color: #f59e0b; font-weight: 600;">1</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #94a3b8; font-size: 0.875rem;">AI Insights</span>
+                            <span style="color: #3b82f6; font-weight: 600;">3</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="main-content">
+                    <div class="business-health">
+                        <h2 style="margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 12px; height: 12px; background: #10b981; border-radius: 50%;"></div>
+                            Business Health: 85%
+                        </h2>
+                        <div style="background: rgba(255,255,255,0.2); height: 8px; border-radius: 4px; margin: 1rem 0;">
+                            <div style="background: white; height: 100%; width: 85%; border-radius: 4px;"></div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+                            <div>
+                                <div style="font-size: 1.5rem; font-weight: 700;">$45K/mo</div>
+                                <div style="font-size: 0.875rem; opacity: 0.9;">Revenue (+12%)</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 1.5rem; font-weight: 700;">$12K/mo</div>
+                                <div style="font-size: 0.875rem; opacity: 0.9;">Profit (26.7%)</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 1.5rem; font-weight: 700;">150</div>
+                                <div style="font-size: 0.875rem; opacity: 0.9;">Customers (+8)</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-value">$45,231</div>
+                            <div class="metric-label">Monthly Revenue</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">150</div>
+                            <div class="metric-label">Active Customers</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">26.7%</div>
+                            <div class="metric-label">Profit Margin</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">94.2%</div>
+                            <div class="metric-label">Customer Retention</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <a href="/onboarding" class="action-btn">Update Info</a>
+                        <a href="#" class="action-btn">Upload Docs</a>
+                        <a href="#" class="action-btn">Voice Input</a>
+                        <a href="#" class="action-btn">Export Data</a>
+                        <a href="#" class="action-btn">AI Chat</a>
+                        <a href="#" class="action-btn">Settings</a>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; padding: 1.5rem; background: #262626; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                        <h3 style="margin: 0 0 0.5rem 0; color: #f59e0b;">Business Alert</h3>
+                        <p style="margin: 0; color: #94a3b8;">Cash flow projection shows potential shortage in Q3 - Review recommended actions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
 
 @app.route('/user_logout')
 def user_logout():
@@ -752,5 +1012,5 @@ if __name__ == '__main__':
     # Create demo user if none exist
     create_demo_user()
     
-    port = int(os.environ.get('PORT', 5001))
+    port = int(os.environ.get('PORT', 5000))
     app.run(debug=False, host='0.0.0.0', port=port)

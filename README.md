@@ -1,30 +1,75 @@
-# Business stats dashboard
+# ProfitWise - AI-Powered Financial Intelligence
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+A modern Flask web application for financial intelligence powered by AI.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/kbhatnagar1506s-projects/v0-business-stats-dashboard)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/projects/Ehi8r200ei7)
+## Features
 
-## Overview
+- **AI-Powered Analysis**: Advanced machine learning algorithms for market analysis
+- **Real-time Data**: Live market data and instant portfolio updates
+- **Risk Management**: Intelligent risk assessment tools
+- **Modern UI/UX**: Clean, responsive design with dark theme
+- **Mobile Responsive**: Optimized for all device sizes
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+## Design
 
-## Deployment
+- **Color Scheme**: 
+  - Primary Green: #0C3D28 (from logo)
+  - Background: Black (#000000)
+  - Text: White (#ffffff)
+- **Typography**: Montserrat font family
+- **Logo**: "Profit" in green, "Wi$e" in white
 
-Your project is live at:
+## Installation
 
-**[https://vercel.com/kbhatnagar1506s-projects/v0-business-stats-dashboard](https://vercel.com/kbhatnagar1506s-projects/v0-business-stats-dashboard)**
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd profitwise
+```
 
-## Build your app
+2. Create a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-Continue building your app on:
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-**[https://v0.app/chat/projects/Ehi8r200ei7](https://v0.app/chat/projects/Ehi8r200ei7)**
+4. Run the application:
+```bash
+python app.py
+```
 
-## How It Works
+5. Open your browser and navigate to `http://localhost:5000`
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+## Project Structure
+
+```
+profitwise/
+├── app.py                 # Main Flask application
+├── requirements.txt       # Python dependencies
+├── templates/
+│   └── index.html        # Main page template
+├── static/
+│   ├── css/
+│   │   └── style.css     # Main stylesheet
+│   └── js/
+│       └── main.js       # JavaScript functionality
+└── assets/
+    └── logoprofitwise.png # Logo image
+```
+
+## Development
+
+The application is built with:
+- **Backend**: Flask (Python)
+- **Frontend**: HTML5, CSS3, JavaScript
+- **Styling**: Custom CSS with Montserrat font
+- **Responsive**: Mobile-first design approach
+
+## License
+
+© 2024 ProfitWise. All rights reserved.

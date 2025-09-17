@@ -3,18 +3,7 @@ import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { TrendingUp, DollarSign, Users, AlertTriangle } from "lucide-react"
 
-interface BusinessData {
-  business_name?: string
-  category?: string
-  website_url?: string
-  created_at?: string
-}
-
-interface BusinessHealthOverviewProps {
-  businessData?: BusinessData
-}
-
-export function BusinessHealthOverview({ businessData }: BusinessHealthOverviewProps) {
+export function BusinessHealthOverview() {
   return (
     <Card className="border-2 border-green-500/20 bg-card">
       <CardHeader>
@@ -72,32 +61,6 @@ export function BusinessHealthOverview({ businessData }: BusinessHealthOverviewP
             1 Alert: Cash flow projection shows potential shortage in Q3
           </p>
         </div>
-
-        {businessData && (
-          <div className="mt-6 p-4 rounded-lg bg-muted/50">
-            <h3 className="font-semibold mb-3">Your Business Profile</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-muted-foreground">Business Name:</span>
-                <p className="font-medium">{businessData.business_name || 'Not provided'}</p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Category:</span>
-                <p className="font-medium">{businessData.category || 'Not specified'}</p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Website:</span>
-                <p className="font-medium">{businessData.website_url || 'Not provided'}</p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Setup Date:</span>
-                <p className="font-medium">
-                  {businessData.created_at ? new Date(businessData.created_at).toLocaleDateString() : 'Unknown'}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
       </CardContent>
     </Card>
   )
