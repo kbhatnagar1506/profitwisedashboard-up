@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
+import { QuickActionsUniversal } from "@/components/quick-actions-universal"
 import { 
   ChartColumn, 
   DollarSign, 
@@ -19,7 +20,9 @@ import {
   ChevronRight,
   TrendingUp,
   AlertTriangle,
-  Brain
+  Brain,
+  Shield,
+  FileText
 } from "lucide-react"
 
 interface NavItem {
@@ -86,6 +89,13 @@ const navItems: NavItem[] = [
     icon: Activity
   },
   {
+    id: 'Financial Audit',
+    label: 'Financial Audit',
+    icon: Shield,
+    badge: '2',
+    badgeVariant: 'destructive'
+  },
+  {
     id: 'Settings',
     label: 'Settings',
     icon: Settings
@@ -138,28 +148,28 @@ export function EnhancedSidebar({ activeSection, setActiveSection }: EnhancedSid
           <div className="flex items-center justify-between">
             {!isCollapsed && (
               <div className="flex items-center space-x-3">
-                <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                  <img 
-                    src="/logoprofitwise.png" 
-                    alt="ProfitWise Logo" 
-                    className="h-8 w-8 object-contain"
-                  />
-                </div>
+                     <div className="h-10 w-10 flex items-center justify-center">
+                       <img
+                         src="/profitwiseicon1.png"
+                         alt="ProfitWi$e Logo"
+                         className="h-10 w-10 object-contain"
+                       />
+                     </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-sidebar-foreground">ProfitWise</h2>
+                  <h2 className="text-lg font-semibold text-sidebar-foreground">ProfitWi$e</h2>
                   <p className="text-sm text-sidebar-foreground/60">AI-Powered Dashboard</p>
                 </div>
               </div>
             )}
-            {isCollapsed && (
-              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto">
-                <img 
-                  src="/logoprofitwise.png" 
-                  alt="ProfitWise Logo" 
-                  className="h-8 w-8 object-contain"
-                />
-              </div>
-            )}
+                   {isCollapsed && (
+                     <div className="h-10 w-10 flex items-center justify-center mx-auto">
+                       <img
+                         src="/profitwiseicon1.png"
+                         alt="ProfitWi$e Logo"
+                         className="h-10 w-10 object-contain"
+                       />
+                     </div>
+                   )}
             <Button
               variant="ghost"
               size="sm"
@@ -207,6 +217,17 @@ export function EnhancedSidebar({ activeSection, setActiveSection }: EnhancedSid
             </Button>
           ))}
         </nav>
+
+        {/* Quick Actions */}
+        {!isCollapsed && (
+          <div className="px-4 py-4 border-t border-sidebar-border">
+            <QuickActionsUniversal 
+              variant="sidebar" 
+              maxItems={6}
+              className="space-y-1"
+            />
+          </div>
+        )}
 
         {/* Health Metrics */}
         {!isCollapsed && (

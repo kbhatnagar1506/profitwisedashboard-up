@@ -13,6 +13,7 @@ import { CashFlowAnalysis } from "@/components/cash-flow-analysis"
 import { SocialMediaAnalytics } from "@/components/social-media-analytics"
 import { AIRecommendations } from "@/components/ai-recommendations"
 import { AIChat } from "@/components/ai-chat"
+import { FinancialAudit } from "@/components/financial-audit"
 import { QuickActions } from "@/components/quick-actions"
 import { RecentTransactions } from "@/components/recent-transactions"
 import { RevenueChart, CustomerSegmentsChart, ProductPerformanceChart } from "@/components/enhanced-charts"
@@ -71,6 +72,8 @@ export default function Dashboard() {
         )
       case "Business Health":
         return <BusinessHealthDetailed />
+      case "Financial Audit":
+        return <FinancialAudit />
       case "Settings":
         return <SettingsPage />
       default:

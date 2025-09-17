@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ProfitWise Dashboard - AI-Powered Business Intelligence",
+  title: "ProfitWi$e Dashboard - AI-Powered Business Intelligence",
   description: "Comprehensive business analytics and AI-powered insights to optimize your business performance and growth.",
 };
 

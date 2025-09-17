@@ -30,7 +30,7 @@ const sampleMessages: Message[] = [
   {
     id: '1',
     role: 'assistant',
-    content: 'Hello! I\'m your AI business assistant. I can help you analyze your business metrics, provide insights, and answer questions about your dashboard. What would you like to know?',
+    content: 'Hello! I\'m ProfitWi$e AI, your intelligent business assistant. I can help you analyze financial data, provide business insights, answer questions about your dashboard, guide you through growth strategies, and assist with financial auditing. What would you like to know about your business today?',
     timestamp: new Date(Date.now() - 300000)
   },
   {
@@ -140,7 +140,7 @@ export function AIChat() {
           <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
             <Sparkles className="h-5 w-5 text-white" />
           </div>
-          AI Business Assistant
+          ProfitWi$e AI
           <Badge variant="secondary" className="ml-auto">
             <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
             Online
