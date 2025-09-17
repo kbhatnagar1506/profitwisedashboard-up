@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { DashboardHeader } from "@/components/dashboard-header"
-import { DashboardSidebar } from "@/components/dashboard-sidebar"
+import { EnhancedHeader } from "@/components/enhanced-header"
+import { EnhancedSidebar } from "@/components/enhanced-sidebar"
 import { BusinessHealthOverview } from "@/components/business-health-overview"
 import { MetricsOverview } from "@/components/metrics-overview"
 import { FinancialAnalytics } from "@/components/financial-analytics"
@@ -14,13 +14,13 @@ import { AIRecommendations } from "@/components/ai-recommendations"
 import { AIChat } from "@/components/ai-chat"
 import { QuickActions } from "@/components/quick-actions"
 import { RecentTransactions } from "@/components/recent-transactions"
-import { RevenueChart } from "@/components/revenue-chart"
+import { RevenueChart, CustomerSegmentsChart, ProductPerformanceChart } from "@/components/enhanced-charts"
 import { ActivityChart } from "@/components/activity-chart"
 import { TopProducts } from "@/components/top-products"
 import { SettingsPage } from "@/components/settings-page"
 
 export default function Dashboard() {
-  const [activeSection, setActiveSection] = useState("Overview")
+  const [activeSection] = useState("Overview")
 
   const renderActiveSection = () => {
     switch (activeSection) {
@@ -36,6 +36,10 @@ export default function Dashboard() {
               <RecentTransactions />
               <TopProducts />
               <ActivityChart />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <CustomerSegmentsChart />
+              <ProductPerformanceChart />
             </div>
             <QuickActions />
           </div>
@@ -53,7 +57,17 @@ export default function Dashboard() {
       case "AI Recommendations":
         return <AIRecommendations />
       case "AI Chat":
-        return <AIChat />
+        return (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <AIChat />
+            </div>
+            <div className="space-y-6">
+              <AIRecommendations />
+              <QuickActions />
+            </div>
+          </div>
+        )
       case "Business Health":
         return <BusinessHealthOverview />
       case "Settings":
@@ -71,6 +85,10 @@ export default function Dashboard() {
               <TopProducts />
               <ActivityChart />
             </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <CustomerSegmentsChart />
+              <ProductPerformanceChart />
+            </div>
             <QuickActions />
           </div>
         )
@@ -79,9 +97,9 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardHeader />
+      <EnhancedHeader />
       <div className="flex">
-        <DashboardSidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+        <EnhancedSidebar />
         <main className="flex-1 p-6">
           <div className="max-w-7xl mx-auto">
             {renderActiveSection()}

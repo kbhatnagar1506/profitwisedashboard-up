@@ -1,30 +1,56 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Copy, ThumbsUp, ThumbsDown, RotateCcw, Send, Plus } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { 
+  Send, 
+  Bot, 
+  User, 
+  Copy, 
+  ThumbsUp, 
+  ThumbsDown, 
+  RotateCcw,
+  Sparkles,
+  Loader2
+} from "lucide-react"
 
 interface Message {
-  role: "user" | "assistant"
+  id: string
+  role: 'user' | 'assistant'
   content: string
   timestamp: Date
+  isTyping?: boolean
 }
 
+const sampleMessages: Message[] = [
+  {
+    id: '1',
+    role: 'assistant',
+    content: 'Hello! I\'m your AI business assistant. I can help you analyze your business metrics, provide insights, and answer questions about your dashboard. What would you like to know?',
+    timestamp: new Date(Date.now() - 300000)
+  },
+  {
+    id: '2',
+    role: 'user',
+    content: 'Can you explain my current business health score?',
+    timestamp: new Date(Date.now() - 240000)
+  },
+  {
+    id: '3',
+    role: 'assistant',
+    content: 'Your business health score of 85% indicates strong overall performance! Here\'s the breakdown:\n\n• **Revenue Growth**: +12.5% month-over-month shows healthy expansion\n• **Customer Retention**: 94.2% is excellent and above industry average\n• **Profit Margin**: 26.7% indicates good operational efficiency\n• **Customer Acquisition**: 150 active customers with +8.2% growth\n\nThe main area to watch is the cash flow projection warning for Q3. I recommend reviewing your expense management and considering revenue diversification strategies.',
+    timestamp: new Date(Date.now() - 180000)
+  }
+]
+
 export function AIChat() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content:
-        "Hello! I'm your AI business advisor. I can help you analyze your performance metrics, identify growth opportunities, and provide strategic recommendations. What would you like to explore today?",
-      timestamp: new Date(),
-    },
-  ])
+  const [messages, setMessages] = useState<Message[]>(sampleMessages)
   const [input, setInput] = useState("")
-  const [isTyping, setIsTyping] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -36,50 +62,57 @@ export function AIChat() {
     scrollToBottom()
   }, [messages])
 
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`
-    }
-  }, [input])
-
-  const businessResponses = [
-    "Based on your current metrics, I notice your customer acquisition cost has improved by 15% this month. Your conversion rate of 3.2% is above industry average. I recommend focusing on your top-performing channels to maximize ROI.",
-    "Your revenue growth shows a strong upward trend. The 23% month-over-month increase suggests your recent marketing campaigns are effective. Consider scaling your successful strategies while monitoring customer lifetime value.",
-    "I see some interesting patterns in your customer data. Your retention rate of 93% is excellent, but there's opportunity to increase average order value. Would you like me to suggest some upselling strategies?",
-    "Your cash flow analysis indicates healthy liquidity. The 2.1x current ratio shows good short-term financial stability. I recommend maintaining 3-6 months of operating expenses in reserves for optimal financial health.",
-    "Looking at your social media analytics, engagement rates have increased 45% this quarter. Your content strategy is resonating well with your audience. Consider expanding to similar platforms to reach new customers.",
-  ]
-
   const handleSend = async () => {
-    if (!input.trim()) return
+    if (!input.trim() || isLoading) return
 
     const userMessage: Message = {
-      role: "user",
-      content: input,
-      timestamp: new Date(),
+      id: Date.now().toString(),
+      role: 'user',
+      content: input.trim(),
+      timestamp: new Date()
     }
 
-    setMessages((prev) => [...prev, userMessage])
+    setMessages(prev => [...prev, userMessage])
     setInput("")
-    setIsTyping(true)
+    setIsLoading(true)
 
-    setTimeout(
-      () => {
-        const assistantMessage: Message = {
-          role: "assistant",
-          content: businessResponses[Math.floor(Math.random() * businessResponses.length)],
-          timestamp: new Date(),
-        }
-        setMessages((prev) => [...prev, assistantMessage])
-        setIsTyping(false)
-      },
-      1500 + Math.random() * 1000,
-    )
+    // Simulate AI response
+    setTimeout(() => {
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: generateAIResponse(input.trim()),
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, aiMessage])
+      setIsLoading(false)
+    }, 1500)
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+  const generateAIResponse = (userInput: string): string => {
+    const lowerInput = userInput.toLowerCase()
+    
+    if (lowerInput.includes('health') || lowerInput.includes('score')) {
+      return `Your business health score of 85% reflects strong performance across key metrics. The score is calculated based on:\n\n• Revenue growth trends\n• Customer retention rates\n• Profit margin stability\n• Cash flow management\n• Market position\n\nTo improve further, focus on the Q3 cash flow projection and consider diversifying revenue streams.`
+    }
+    
+    if (lowerInput.includes('revenue') || lowerInput.includes('profit')) {
+      return `Your financial metrics show positive trends:\n\n**Revenue**: $45,231/month (+12.5% growth)\n**Profit Margin**: 26.7% (industry average: 20-25%)\n**Monthly Profit**: ~$12,000\n\nRecommendations:\n• Consider reinvesting 30% of profits in growth initiatives\n• Monitor customer acquisition costs\n• Explore premium service tiers for higher margins`
+    }
+    
+    if (lowerInput.includes('customer') || lowerInput.includes('retention')) {
+      return `Customer metrics are excellent:\n\n**Active Customers**: 150 (+8.2% growth)\n**Retention Rate**: 94.2% (outstanding!)\n**Customer Segments**: Well-distributed across demographics\n\nYour retention rate is significantly above the 80-85% industry average. Consider implementing a customer success program to maintain this level while scaling.`
+    }
+    
+    if (lowerInput.includes('alert') || lowerInput.includes('warning')) {
+      return `You have 1 active alert:\n\n**Cash Flow Projection Warning**\n• Q3 shows potential shortage\n• Current runway: ~4 months\n• Recommended actions:\n  - Review recurring expenses\n  - Accelerate accounts receivable\n  - Consider short-term financing\n  - Optimize inventory management\n\nI can help you create a detailed action plan.`
+    }
+    
+    return `I understand you're asking about "${userInput}". Based on your current business data, I can provide insights on:\n\n• Financial performance and trends\n• Customer analytics and retention\n• Growth opportunities\n• Risk assessment and alerts\n• Strategic recommendations\n\nCould you be more specific about which area you'd like me to analyze?`
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSend()
     }
@@ -89,164 +122,143 @@ export function AIChat() {
     navigator.clipboard.writeText(content)
   }
 
-  const regenerateResponse = () => {
-    if (messages.length > 1) {
-      const lastUserMessage = messages[messages.length - 2]
-      if (lastUserMessage.role === "user") {
-        setMessages((prev) => prev.slice(0, -1))
-        setIsTyping(true)
-
-        setTimeout(() => {
-          const newResponse: Message = {
-            role: "assistant",
-            content: businessResponses[Math.floor(Math.random() * businessResponses.length)],
-            timestamp: new Date(),
-          }
-          setMessages((prev) => [...prev, newResponse])
-          setIsTyping(false)
-        }, 1500)
+  const regenerateResponse = (messageId: string) => {
+    const messageIndex = messages.findIndex(m => m.id === messageId)
+    if (messageIndex > 0) {
+      const userMessage = messages[messageIndex - 1]
+      if (userMessage.role === 'user') {
+        setMessages(prev => prev.slice(0, messageIndex))
+        setInput(userMessage.content)
       }
     }
   }
 
-  const startNewChat = () => {
-    setMessages([
-      {
-        role: "assistant",
-        content:
-          "Hello! I'm your AI business advisor. I can help you analyze your performance metrics, identify growth opportunities, and provide strategic recommendations. What would you like to explore today?",
-        timestamp: new Date(),
-      },
-    ])
-  }
-
   return (
-    <div className="flex flex-col h-[calc(100vh-120px)] bg-background">
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        <div className="flex items-center gap-3">
-          <Avatar className="w-8 h-8 bg-green-600">
-            <AvatarFallback className="bg-green-600 text-white text-sm">AI</AvatarFallback>
-          </Avatar>
-          <div>
-            <h2 className="font-semibold text-foreground">Business AI Assistant</h2>
-            <p className="text-sm text-muted-foreground">Powered by advanced AI</p>
+    <Card className="h-[600px] flex flex-col">
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-2">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+            <Sparkles className="h-5 w-5 text-white" />
           </div>
-        </div>
-        <Button variant="outline" size="sm" onClick={startNewChat} className="gap-2 bg-transparent">
-          <Plus className="w-4 h-4" />
-          New Chat
-        </Button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          {messages.map((message, index) => (
-            <div key={index} className="group mb-8">
-              <div className={`flex gap-4 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
-                {message.role === "assistant" && (
-                  <Avatar className="w-8 h-8 bg-green-600 flex-shrink-0">
-                    <AvatarFallback className="bg-green-600 text-white text-sm">AI</AvatarFallback>
-                  </Avatar>
-                )}
-
-                <div className={`flex flex-col ${message.role === "user" ? "items-end" : "items-start"} max-w-[80%]`}>
-                  <div
-                    className={`rounded-2xl px-4 py-3 ${
-                      message.role === "user" ? "bg-blue-600 text-white" : "bg-muted border border-border"
-                    }`}
-                  >
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
-                  </div>
-
-                  {message.role === "assistant" && (
-                    <div className="flex gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 hover:bg-muted"
-                        onClick={() => copyMessage(message.content)}
-                      >
-                        <Copy className="w-3 h-3" />
-                      </Button>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-muted">
-                        <ThumbsUp className="w-3 h-3" />
-                      </Button>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-muted">
-                        <ThumbsDown className="w-3 h-3" />
-                      </Button>
-                      {index === messages.length - 1 && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0 hover:bg-muted"
-                          onClick={regenerateResponse}
-                        >
-                          <RotateCcw className="w-3 h-3" />
-                        </Button>
-                      )}
-                    </div>
-                  )}
+          AI Business Assistant
+          <Badge variant="secondary" className="ml-auto">
+            <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+            Online
+          </Badge>
+        </CardTitle>
+      </CardHeader>
+      
+      <CardContent className="flex-1 flex flex-col p-0">
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              {message.role === 'assistant' && (
+                <Avatar className="h-8 w-8 shrink-0">
+                  <AvatarImage src="/ai-avatar.png" />
+                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                    <Bot className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+              )}
+              
+              <div
+                className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                  message.role === 'user'
+                    ? 'bg-primary text-primary-foreground ml-12'
+                    : 'bg-muted mr-12'
+                }`}
+              >
+                <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                  {message.content}
                 </div>
-
-                {message.role === "user" && (
-                  <Avatar className="w-8 h-8 bg-blue-600 flex-shrink-0">
-                    <AvatarFallback className="bg-blue-600 text-white text-sm">You</AvatarFallback>
-                  </Avatar>
+                
+                {message.role === 'assistant' && (
+                  <div className="flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0"
+                      onClick={() => copyMessage(message.content)}
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0"
+                      onClick={() => regenerateResponse(message.id)}
+                    >
+                      <RotateCcw className="h-3 w-3" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                      <ThumbsUp className="h-3 w-3" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                      <ThumbsDown className="h-3 w-3" />
+                    </Button>
+                  </div>
                 )}
               </div>
+              
+              {message.role === 'user' && (
+                <Avatar className="h-8 w-8 shrink-0">
+                  <AvatarFallback className="bg-primary text-primary-foreground">
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+              )}
             </div>
           ))}
-
-          {isTyping && (
-            <div className="flex gap-4 mb-8">
-              <Avatar className="w-8 h-8 bg-green-600">
-                <AvatarFallback className="bg-green-600 text-white text-sm">AI</AvatarFallback>
+          
+          {isLoading && (
+            <div className="flex gap-3 justify-start">
+              <Avatar className="h-8 w-8 shrink-0">
+                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                  <Bot className="h-4 w-4" />
+                </AvatarFallback>
               </Avatar>
-              <div className="bg-muted border border-border rounded-2xl px-4 py-3">
-                <div className="flex gap-1">
-                  <div className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce"></div>
-                  <div
-                    className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce"
-                    style={{ animationDelay: "0.1s" }}
-                  ></div>
-                  <div
-                    className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce"
-                    style={{ animationDelay: "0.2s" }}
-                  ></div>
+              <div className="bg-muted rounded-2xl px-4 py-3 mr-12">
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="text-sm text-muted-foreground">AI is thinking...</span>
                 </div>
               </div>
             </div>
           )}
+          
           <div ref={messagesEndRef} />
         </div>
-      </div>
-
-      <div className="border-t border-border bg-background">
-        <div className="max-w-4xl mx-auto p-4">
-          <div className="relative">
+        
+        {/* Input Area */}
+        <div className="border-t p-4">
+          <div className="flex gap-2">
             <Textarea
               ref={textareaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask about your business metrics, growth strategies, or performance insights..."
-              className="min-h-[52px] max-h-[200px] pr-12 resize-none border-border focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              disabled={isTyping}
+              onKeyPress={handleKeyPress}
+              placeholder="Ask me anything about your business..."
+              className="min-h-[44px] max-h-32 resize-none"
+              disabled={isLoading}
             />
             <Button
               onClick={handleSend}
+              disabled={!input.trim() || isLoading}
               size="sm"
-              className="absolute right-2 bottom-2 h-8 w-8 p-0 bg-blue-600 hover:bg-blue-700"
-              disabled={!input.trim() || isTyping}
+              className="px-3"
             >
-              <Send className="w-4 h-4" />
+              <Send className="h-4 w-4" />
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground mt-2 text-center">
-            AI can make mistakes. Verify important business decisions.
+          <p className="text-xs text-muted-foreground mt-2">
+            Press Enter to send, Shift+Enter for new line
           </p>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }
