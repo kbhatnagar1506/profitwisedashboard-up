@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Bell, Shield, Palette, Database, Save } from "lucide-react"
+import { DataBackup } from "./data-backup"
 
 export function SettingsPage() {
   const [notifications, setNotifications] = useState({
@@ -249,6 +250,9 @@ export function SettingsPage() {
           Save Settings
         </Button>
       </div>
+
+      {/* Data Backup Section */}
+      <DataBackup />
     </div>
   )
 }

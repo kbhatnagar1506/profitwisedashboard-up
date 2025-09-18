@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { usePersistence } from "@/hooks/use-persistence"
 import { EnhancedHeader } from "@/components/enhanced-header"
 import { EnhancedSidebar } from "@/components/enhanced-sidebar"
 import { BusinessHealthOverview } from "@/components/business-health-overview"
@@ -23,6 +24,41 @@ import { SettingsPage } from "@/components/settings-page"
 
 export default function Dashboard() {
   const [activeSection, setActiveSection] = useState("Overview")
+  const [isLoading, setIsLoading] = useState(true)
+  const { debouncedSave, loadState } = usePersistence()
+
+  // Load saved state on mount
+  useEffect(() => {
+    const loadSavedState = async () => {
+      try {
+        const savedState = await loadState()
+        if (savedState?.dashboard_state) {
+          setActiveSection(savedState.dashboard_state.active_section || "Overview")
+        }
+      } catch (error) {
+        console.error('Failed to load saved state:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadSavedState()
+  }, [loadState])
+
+  // Save state when activeSection changes
+  useEffect(() => {
+    if (!isLoading) {
+      debouncedSave({
+        activeSection,
+        viewedSections: [activeSection],
+        interactions: [{
+          type: 'section_change',
+          section: activeSection,
+          timestamp: new Date().toISOString()
+        }]
+      })
+    }
+  }, [activeSection, debouncedSave, isLoading])
 
   const renderActiveSection = () => {
     switch (activeSection) {
@@ -99,13 +135,24 @@ export default function Dashboard() {
     }
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <EnhancedHeader />
       <div className="flex">
-        <EnhancedSidebar 
-          activeSection={activeSection} 
-          setActiveSection={setActiveSection} 
+        <EnhancedSidebar
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
         />
         <main className="flex-1 p-6">
           <div className="max-w-7xl mx-auto">

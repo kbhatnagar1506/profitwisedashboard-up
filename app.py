@@ -105,9 +105,30 @@ def load_businesses():
     return []
 
 def save_businesses(businesses):
-    """Save businesses to file"""
-    with open(BUSINESSES_FILE, 'w') as f:
-        json.dump(businesses, f, indent=2)
+    """Save businesses to file with backup"""
+    try:
+        # Create backup of existing data
+        if os.path.exists(BUSINESSES_FILE):
+            backup_file = f"{BUSINESSES_FILE}.backup"
+            with open(BUSINESSES_FILE, 'r') as original:
+                with open(backup_file, 'w') as backup:
+                    backup.write(original.read())
+        
+        # Save new data
+        with open(BUSINESSES_FILE, 'w') as f:
+            json.dump(businesses, f, indent=2)
+        
+        # Also save to a timestamped backup
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamped_backup = f"{BUSINESSES_FILE}.{timestamp}"
+        with open(timestamped_backup, 'w') as f:
+            json.dump(businesses, f, indent=2)
+        
+        print(f"Businesses saved successfully. Backup created: {timestamped_backup}")
+        return True
+    except Exception as e:
+        print(f"Error saving businesses: {e}")
+        return False
 
 def hash_password(password):
     """Hash a password using SHA-256"""
@@ -464,6 +485,15 @@ def get_dashboard_data():
     
     if not user_business:
         return jsonify({'error': 'No business data found'}), 404
+    
+    # Update last access time
+    user_business['last_access'] = datetime.now().isoformat()
+    user_business['access_count'] = user_business.get('access_count', 0) + 1
+    
+    # Save updated access info
+    businesses = [b for b in businesses if b['user_id'] != user_id]
+    businesses.append(user_business)
+    save_businesses(businesses)
     
     # Extract and format data for dashboard
     onboarding_data = user_business.get('onboarding_data', {})
@@ -965,6 +995,197 @@ def extract_strategic_data(content):
         strategic_data['has_goals'] = True
     
     return strategic_data
+
+@app.route('/api/save-dashboard-state', methods=['POST'])
+def save_dashboard_state():
+    """Save dashboard state and user interactions"""
+    if not session.get('user_authenticated'):
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        data = request.get_json()
+        user_id = session.get('user_id')
+        businesses = load_businesses()
+        user_business = next((b for b in businesses if b['user_id'] == user_id), None)
+        
+        if not user_business:
+            return jsonify({'error': 'No business data found'}), 404
+        
+        # Save dashboard state
+        dashboard_state = {
+            'active_section': data.get('active_section', 'Overview'),
+            'last_updated': datetime.now().isoformat(),
+            'user_preferences': data.get('user_preferences', {}),
+            'viewed_sections': data.get('viewed_sections', []),
+            'interactions': data.get('interactions', []),
+            'bookmarks': data.get('bookmarks', []),
+            'notes': data.get('notes', {}),
+            'filters': data.get('filters', {}),
+            'settings': data.get('settings', {})
+        }
+        
+        user_business['dashboard_state'] = dashboard_state
+        user_business['last_dashboard_update'] = datetime.now().isoformat()
+        
+        # Save extracted data if provided
+        if 'extracted_data' in data:
+            user_business['extracted_data'] = data['extracted_data']
+        
+        # Save analytics data
+        if 'analytics' in data:
+            if 'analytics' not in user_business:
+                user_business['analytics'] = {}
+            user_business['analytics'].update(data['analytics'])
+        
+        # Save AI chat history
+        if 'chat_history' in data:
+            if 'chat_history' not in user_business:
+                user_business['chat_history'] = []
+            user_business['chat_history'].extend(data['chat_history'])
+            # Keep only last 100 messages
+            user_business['chat_history'] = user_business['chat_history'][-100:]
+        
+        # Save reports and exports
+        if 'reports' in data:
+            if 'reports' not in user_business:
+                user_business['reports'] = []
+            user_business['reports'].extend(data['reports'])
+        
+        # Save alerts and notifications
+        if 'alerts' in data:
+            if 'alerts' not in user_business:
+                user_business['alerts'] = []
+            user_business['alerts'].extend(data['alerts'])
+        
+        # Update business data
+        businesses = [b for b in businesses if b['user_id'] != user_id]
+        businesses.append(user_business)
+        
+        if save_businesses(businesses):
+            return jsonify({
+                'success': True,
+                'message': 'Dashboard state saved successfully',
+                'timestamp': datetime.now().isoformat()
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Failed to save data'
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/get-dashboard-state')
+def get_dashboard_state():
+    """Get saved dashboard state for user"""
+    if not session.get('user_authenticated'):
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    user_id = session.get('user_id')
+    businesses = load_businesses()
+    user_business = next((b for b in businesses if b['user_id'] == user_id), None)
+    
+    if not user_business:
+        return jsonify({'error': 'No business data found'}), 404
+    
+    return jsonify({
+        'dashboard_state': user_business.get('dashboard_state', {}),
+        'extracted_data': user_business.get('extracted_data', {}),
+        'analytics': user_business.get('analytics', {}),
+        'chat_history': user_business.get('chat_history', []),
+        'reports': user_business.get('reports', []),
+        'alerts': user_business.get('alerts', []),
+        'last_updated': user_business.get('last_dashboard_update', ''),
+        'access_count': user_business.get('access_count', 0),
+        'last_access': user_business.get('last_access', '')
+    })
+
+@app.route('/api/export-user-data')
+def export_user_data():
+    """Export all user data for backup"""
+    if not session.get('user_authenticated'):
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    user_id = session.get('user_id')
+    businesses = load_businesses()
+    user_business = next((b for b in businesses if b['user_id'] == user_id), None)
+    
+    if not user_business:
+        return jsonify({'error': 'No business data found'}), 404
+    
+    # Create comprehensive export
+    export_data = {
+        'user_info': {
+            'user_id': user_id,
+            'export_timestamp': datetime.now().isoformat(),
+            'data_version': '1.0'
+        },
+        'business_profile': user_business,
+        'export_metadata': {
+            'total_sections': len(user_business.get('onboarding_data', {})),
+            'data_completeness': user_business.get('data_completeness', 0),
+            'last_updated': user_business.get('updated_at', ''),
+            'access_count': user_business.get('access_count', 0)
+        }
+    }
+    
+    return jsonify(export_data)
+
+@app.route('/api/import-user-data', methods=['POST'])
+def import_user_data():
+    """Import user data from backup"""
+    if not session.get('user_authenticated'):
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        data = request.get_json()
+        user_id = session.get('user_id')
+        businesses = load_businesses()
+        
+        # Validate import data
+        if 'business_profile' not in data:
+            return jsonify({'error': 'Invalid import data format'}), 400
+        
+        import_data = data['business_profile']
+        
+        # Update user's business data
+        user_business = next((b for b in businesses if b['user_id'] == user_id), None)
+        if user_business:
+            # Merge imported data
+            user_business.update(import_data)
+            user_business['imported_at'] = datetime.now().isoformat()
+            user_business['import_source'] = data.get('user_info', {}).get('export_timestamp', 'unknown')
+        else:
+            # Create new business profile
+            import_data['user_id'] = user_id
+            import_data['imported_at'] = datetime.now().isoformat()
+            user_business = import_data
+        
+        # Save updated data
+        businesses = [b for b in businesses if b['user_id'] != user_id]
+        businesses.append(user_business)
+        
+        if save_businesses(businesses):
+            return jsonify({
+                'success': True,
+                'message': 'Data imported successfully',
+                'timestamp': datetime.now().isoformat()
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Failed to save imported data'
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 @app.route('/login')
 def login_page():

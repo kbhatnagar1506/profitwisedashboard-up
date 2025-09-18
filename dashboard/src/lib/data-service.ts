@@ -146,6 +146,92 @@ class DataService {
     }
   }
 
+  async saveDashboardState(state: any): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/save-dashboard-state`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(state),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Error saving dashboard state:', error)
+      throw error
+    }
+  }
+
+  async getDashboardState(): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/get-dashboard-state`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Error getting dashboard state:', error)
+      return null
+    }
+  }
+
+  async exportUserData(): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/export-user-data`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Error exporting user data:', error)
+      throw error
+    }
+  }
+
+  async importUserData(data: any): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/import-user-data`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Error importing user data:', error)
+      throw error
+    }
+  }
+
   private getMockData(): DashboardData {
     return {
       business_info: {
