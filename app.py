@@ -482,8 +482,29 @@ def dashboard():
         # Redirect to onboarding if no business data
         return redirect(url_for('onboarding_page'))
     
-    # Redirect to Next.js dashboard running on port 3001
-    return redirect('http://localhost:3001')
+    # Redirect to dashboard page within Flask app
+    return redirect(url_for('dashboard_page'))
+
+@app.route('/dashboard')
+def dashboard_page():
+    """Dashboard page - embedded Next.js dashboard"""
+    if not session.get('user_authenticated'):
+        return redirect(url_for('login_page'))
+    
+    user_id = session.get('user_id')
+    businesses = load_businesses()
+    user_business = next((b for b in businesses if b['user_id'] == user_id), None)
+    
+    if not user_business:
+        return redirect(url_for('onboarding_page'))
+    
+    # Get user's business data for the dashboard
+    onboarding_data = user_business.get('onboarding_data', {})
+    
+    return render_template('dashboard.html', 
+                         user_name=session.get('user_name', 'User'),
+                         business_data=onboarding_data,
+                         user_business=user_business)
 
 @app.route('/user_logout')
 def user_logout():

@@ -247,5 +247,264 @@
       "scraped_at": 1758145288.016151
     },
     "last_scraped": 1758145288.016264
+  },
+  {
+    "user_id": "demo_investor_user",
+    "email": "demo@techflow-solutions.com",
+    "name": "TechFlow Solutions Demo",
+    "onboarding_data": {
+      "business_name": "TechFlow Solutions",
+      "business_category": "SaaS Technology",
+      "monthly_revenue": "$150,000",
+      "revenue_model": "Subscription-based SaaS with tiered pricing",
+      "customer_retention": "92%",
+      "revenue_per_customer": "$2,400",
+      "customer_acquisition_cost": "$180",
+      "cash_flow": "Positive with 15% monthly growth",
+      "direct_costs": "Cloud infrastructure, customer support, and payment processing",
+      "operating_expenses": "Salaries (60%), marketing (25%), R&D (15%)",
+      "profit_barriers": "Scaling customer support and international expansion costs",
+      "cost_revenue_opportunities": "Enterprise sales, API monetization, and white-label solutions",
+      "financial_tools": "QuickBooks, Stripe, HubSpot, AWS Cost Management",
+      "linkedin_page": "https://linkedin.com/company/techflow-solutions",
+      "twitter_handle": "@techflowsolutions",
+      "instagram_account": "@techflow_solutions",
+      "facebook_page": "https://facebook.com/techflowsolutions"
+    },
+    "category": "SaaS Technology",
+    "completion_date": "2025-09-17T21:13:42.316374",
+    "last_access": "2025-09-17T21:13:42.316550",
+    "access_count": 1,
+    "created_at": "2025-09-17T21:13:42.316552",
+    "updated_at": "2025-09-17T21:13:42.316553",
+    "extracted_data": {
+      "financial_data": {
+        "revenue_streams": [
+          "Subscription revenue: $1.8M ARR",
+          "Professional services: $200K ARR",
+          "API usage fees: $50K ARR"
+        ],
+        "cost_structure": {
+          "cost_of_goods_sold": 15,
+          "sales_marketing": 25,
+          "research_development": 15,
+          "general_administrative": 10
+        },
+        "profitability": {
+          "gross_profit_margin": 85,
+          "ebitda_margin": 22,
+          "net_profit_margin": 18
+        }
+      },
+      "customer_data": {
+        "segmentation": {
+          "enterprise": "45 customers, $4.2M ARR",
+          "mid_market": "280 customers, $1.1M ARR",
+          "smb": "300 customers, $0.7M ARR"
+        },
+        "behavior_patterns": {
+          "average_session_duration": "23 minutes",
+          "features_used_per_customer": 8.5,
+          "support_tickets_per_customer": 0.8
+        }
+      },
+      "strategic_data": {
+        "market_opportunities": [
+          "International expansion: $2B TAM",
+          "Vertical specialization: $500M SAM",
+          "Platform ecosystem: $1B opportunity"
+        ],
+        "competitive_advantages": [
+          "AI-powered automation",
+          "Superior user experience",
+          "Strong customer success",
+          "Rapid product iteration"
+        ]
+      }
+    },
+    "ai_analysis": {
+      "comprehensive_analysis": {
+        "executive_summary": "TechFlow Solutions is a high-growth SaaS company with exceptional unit economics, strong product-market fit, and significant expansion opportunities. The company demonstrates superior performance across key SaaS metrics with 92% customer retention, 15% monthly growth, and industry-leading efficiency ratios.",
+        "financial_analysis": {
+          "revenue_health": "Excellent - Strong revenue growth of 15% monthly with $1.8M ARR and positive unit economics",
+          "profitability": "Strong - 85% gross margins and 22% EBITDA margins with path to profitability",
+          "cash_flow_analysis": "Healthy - Positive cash flow with 24 months runway and controlled burn rate",
+          "financial_risks": "Low - Diversified revenue streams and strong customer retention",
+          "financial_recommendations": [
+            "Optimize pricing strategy for enterprise segment",
+            "Implement usage-based pricing for API services",
+            "Focus on high-value customer acquisition",
+            "Prepare for Series A funding round"
+          ]
+        },
+        "customer_analysis": {
+          "customer_health": "Excellent - 92% retention rate with strong NPS of 67",
+          "acquisition_efficiency": "Outstanding - CAC of $180 with CLV of $28,800 (160:1 ratio)",
+          "retention_strategy": "Strong - Proactive customer success and product-led growth",
+          "customer_risks": "Low - Diversified customer base across segments",
+          "customer_recommendations": [
+            "Expand enterprise customer success team",
+            "Implement customer health scoring",
+            "Develop self-service onboarding",
+            "Create customer advisory board"
+          ]
+        },
+        "growth_analysis": {
+          "growth_potential": "High - Large TAM of $50B with multiple expansion vectors",
+          "market_position": "Strong - Differentiated AI capabilities with defensible moats",
+          "scalability": "Excellent - SaaS model with high gross margins and automation",
+          "growth_barriers": "Moderate - Talent acquisition and international expansion",
+          "growth_recommendations": [
+            "Accelerate international expansion",
+            "Build strategic partnerships",
+            "Invest in AI/ML capabilities",
+            "Develop vertical-specific solutions"
+          ]
+        },
+        "operational_analysis": {
+          "efficiency": "High - Automated processes with 99.9% uptime",
+          "process_optimization": "Strong - Continuous deployment and monitoring",
+          "technology_adoption": "Advanced - Modern tech stack with AI integration",
+          "operational_risks": "Low - Robust infrastructure and security",
+          "operational_recommendations": [
+            "Implement advanced analytics",
+            "Enhance security compliance",
+            "Optimize cloud costs",
+            "Build disaster recovery"
+          ]
+        },
+        "strategic_recommendations": [
+          "Raise Series A funding to accelerate growth",
+          "Expand internationally to capture market share",
+          "Invest in AI capabilities for competitive advantage",
+          "Build strategic partnerships for distribution",
+          "Develop enterprise-grade security and compliance"
+        ],
+        "priority_actions": [
+          "Prepare Series A pitch deck and financial model",
+          "Hire VP of Sales for enterprise expansion",
+          "Launch international go-to-market strategy",
+          "Implement advanced customer analytics",
+          "Develop AI-powered product features"
+        ],
+        "long_term_goals": [
+          "Achieve $10M ARR by end of 2025",
+          "Expand to 3 international markets",
+          "Build platform ecosystem with 100+ integrations",
+          "Achieve market leadership in AI automation",
+          "Prepare for Series B or strategic exit"
+        ],
+        "risk_assessment": {
+          "high_risks": [
+            "Competition from established players like Microsoft and Zapier",
+            "Economic downturn affecting enterprise software spending"
+          ],
+          "medium_risks": [
+            "Talent acquisition challenges in competitive market",
+            "Technology platform scaling with rapid growth"
+          ],
+          "low_risks": [
+            "Regulatory changes in automation space",
+            "Key person dependency on founding team"
+          ]
+        },
+        "success_metrics": {
+          "kpis_to_track": [
+            "Monthly Recurring Revenue (MRR) growth",
+            "Customer Acquisition Cost (CAC) optimization",
+            "Customer Lifetime Value (CLV) expansion",
+            "Net Revenue Retention rate",
+            "Gross Revenue Retention rate",
+            "Churn rate reduction",
+            "Net Promoter Score (NPS) improvement"
+          ],
+          "benchmarks": "Industry-leading performance across all key SaaS metrics",
+          "measurement_frequency": "Weekly for operational metrics, monthly for strategic metrics"
+        },
+        "ai_confidence_score": 95,
+        "analysis_timestamp": "2025-09-17T21:13:42.316557"
+      },
+      "recommendations": {
+        "immediate_actions": [
+          {
+            "title": "Prepare Series A Funding",
+            "description": "Company is well-positioned for Series A with strong metrics and growth trajectory",
+            "category": "Funding",
+            "priority": "High",
+            "timeline": "Next 3 months",
+            "impact": "High",
+            "effort": "Medium",
+            "specific_actions": [
+              "Create comprehensive pitch deck",
+              "Prepare financial model and projections",
+              "Identify target investors",
+              "Conduct due diligence preparation"
+            ]
+          },
+          {
+            "title": "Accelerate Enterprise Sales",
+            "description": "Focus on high-value enterprise customers to improve unit economics",
+            "category": "Sales",
+            "priority": "High",
+            "timeline": "Next 6 months",
+            "impact": "High",
+            "effort": "High",
+            "specific_actions": [
+              "Hire VP of Enterprise Sales",
+              "Develop enterprise sales playbook",
+              "Create enterprise-specific features",
+              "Implement account-based marketing"
+            ]
+          }
+        ],
+        "strategic_initiatives": [
+          {
+            "title": "International Expansion",
+            "description": "Expand to European and Asian markets to capture additional TAM",
+            "category": "Growth",
+            "priority": "Medium",
+            "timeline": "Next 12 months",
+            "impact": "High",
+            "effort": "High",
+            "specific_actions": [
+              "Conduct market research",
+              "Establish local partnerships",
+              "Adapt product for local markets",
+              "Hire local team members"
+            ]
+          }
+        ]
+      },
+      "insights": {
+        "key_insights": [
+          {
+            "title": "Exceptional Unit Economics",
+            "description": "CLV:CAC ratio of 160:1 is 4x industry average, indicating strong product-market fit",
+            "type": "financial",
+            "confidence": 95,
+            "action_required": true,
+            "category": "Performance"
+          },
+          {
+            "title": "Strong Product-Market Fit",
+            "description": "92% customer retention and 67 NPS score demonstrate excellent product-market fit",
+            "type": "customer",
+            "confidence": 90,
+            "action_required": false,
+            "category": "Validation"
+          },
+          {
+            "title": "Scalable Business Model",
+            "description": "SaaS model with 85% gross margins and automated processes enables rapid scaling",
+            "type": "operational",
+            "confidence": 88,
+            "action_required": false,
+            "category": "Scalability"
+          }
+        ]
+      },
+      "analysis_timestamp": "2025-09-17T21:13:42.316560",
+      "analysis_version": "1.0"
+    }
   }
 ]
