@@ -9,6 +9,18 @@ from scraper import DataScraper
 import threading
 import time
 import openai
+from error_handler import (
+    handle_errors, validate_required_fields, validate_user_authentication,
+    validate_admin_authentication, safe_json_loads, safe_file_operation,
+    retry_on_failure, log_performance, register_error_handlers,
+    ProfitWiseError, ValidationError, AuthenticationError, AuthorizationError,
+    DataNotFoundError, ExternalServiceError, DatabaseError, AIAnalysisError,
+    RateLimitError, error_monitor, get_user_friendly_message
+)
+import logging
+
+# Configure logger
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -32,6 +44,9 @@ ADMIN_SECRET = os.environ.get('ADMIN_SECRET', secrets.token_urlsafe(32))
 
 # Initialize scraper
 scraper = DataScraper()
+
+# Register error handlers
+register_error_handlers(app)
 
 # Template filter for timestamp conversion
 @app.template_filter('timestamp_to_date')
@@ -478,26 +493,28 @@ def user_logout():
     return redirect(url_for('index'))
 
 @app.route('/api/dashboard-data')
+@handle_errors
+@log_performance
 def get_dashboard_data():
     """Get user's business data for dashboard"""
-    if not session.get('user_authenticated'):
-        return jsonify({'error': 'Not authenticated'}), 401
+    # Validate authentication
+    user_id = validate_user_authentication()
     
-    user_id = session.get('user_id')
-    businesses = load_businesses()
+    # Load business data safely
+    businesses = safe_file_operation(load_businesses)
     user_business = next((b for b in businesses if b['user_id'] == user_id), None)
     
     if not user_business:
-        return jsonify({'error': 'No business data found'}), 404
+        raise DataNotFoundError("Business profile not found", resource="business_profile")
     
     # Update last access time
     user_business['last_access'] = datetime.now().isoformat()
     user_business['access_count'] = user_business.get('access_count', 0) + 1
     
-    # Save updated access info
+    # Save updated access info safely
     businesses = [b for b in businesses if b['user_id'] != user_id]
     businesses.append(user_business)
-    save_businesses(businesses)
+    safe_file_operation(save_businesses, businesses)
     
     # Extract and format data for dashboard
     onboarding_data = user_business.get('onboarding_data', {})
@@ -1464,51 +1481,46 @@ def import_user_data():
         }), 500
 
 @app.route('/api/ai-analysis', methods=['POST'])
+@handle_errors
+@log_performance
 def run_ai_analysis():
     """Run comprehensive AI analysis on business data"""
-    if not session.get('user_authenticated'):
-        return jsonify({'error': 'Not authenticated'}), 401
+    # Validate authentication
+    user_id = validate_user_authentication()
     
-    try:
-        user_id = session.get('user_id')
-        businesses = load_businesses()
-        user_business = next((b for b in businesses if b['user_id'] == user_id), None)
-        
-        if not user_business:
-            return jsonify({'error': 'No business data found'}), 404
-        
-        # Run AI analysis
-        ai_analysis = analyze_business_with_ai(user_business)
-        ai_recommendations = generate_ai_recommendations(user_business)
-        ai_insights = generate_ai_insights(user_business)
-        
-        # Save AI analysis to business data
-        user_business['ai_analysis'] = {
-            'comprehensive_analysis': ai_analysis,
-            'recommendations': ai_recommendations,
-            'insights': ai_insights,
-            'analysis_timestamp': datetime.now().isoformat(),
-            'analysis_version': '1.0'
-        }
-        
-        # Update business data
-        businesses = [b for b in businesses if b['user_id'] != user_id]
-        businesses.append(user_business)
-        save_businesses(businesses)
-        
-        return jsonify({
-            'success': True,
-            'analysis': ai_analysis,
-            'recommendations': ai_recommendations,
-            'insights': ai_insights,
-            'timestamp': datetime.now().isoformat()
-        })
-        
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+    # Load and validate business data
+    businesses = safe_file_operation(load_businesses)
+    user_business = next((b for b in businesses if b['user_id'] == user_id), None)
+    
+    if not user_business:
+        raise DataNotFoundError("Business profile not found", resource="business_profile")
+    
+    # Run AI analysis with retry mechanism
+    ai_analysis = analyze_business_with_ai_safe(user_business)
+    ai_recommendations = generate_ai_recommendations_safe(user_business)
+    ai_insights = generate_ai_insights_safe(user_business)
+    
+    # Save AI analysis to business data
+    user_business['ai_analysis'] = {
+        'comprehensive_analysis': ai_analysis,
+        'recommendations': ai_recommendations,
+        'insights': ai_insights,
+        'analysis_timestamp': datetime.now().isoformat(),
+        'analysis_version': '1.0'
+    }
+    
+    # Update business data safely
+    businesses = [b for b in businesses if b['user_id'] != user_id]
+    businesses.append(user_business)
+    safe_file_operation(save_businesses, businesses)
+    
+    return jsonify({
+        'success': True,
+        'analysis': ai_analysis,
+        'recommendations': ai_recommendations,
+        'insights': ai_insights,
+        'timestamp': datetime.now().isoformat()
+    })
 
 @app.route('/api/ai-insights')
 def get_ai_insights():
@@ -1533,46 +1545,93 @@ def get_ai_insights():
         'has_analysis': bool(ai_data)
     })
 
+# Safe wrapper functions for AI operations with error handling
+@retry_on_failure(max_retries=3, delay=1.0)
+def analyze_business_with_ai_safe(business_data):
+    """Safe wrapper for AI analysis with error handling"""
+    try:
+        result = analyze_business_with_ai(business_data)
+        if result.get('error'):
+            raise AIAnalysisError(f"AI analysis failed: {result['error']}", analysis_type="comprehensive")
+        return result
+    except openai.error.OpenAIError as e:
+        raise AIAnalysisError(f"OpenAI API error: {str(e)}", analysis_type="comprehensive")
+    except Exception as e:
+        raise AIAnalysisError(f"Analysis error: {str(e)}", analysis_type="comprehensive")
+
+@retry_on_failure(max_retries=3, delay=1.0)
+def generate_ai_recommendations_safe(business_data):
+    """Safe wrapper for AI recommendations with error handling"""
+    try:
+        result = generate_ai_recommendations(business_data)
+        if result.get('error'):
+            raise AIAnalysisError(f"AI recommendations failed: {result['error']}", analysis_type="recommendations")
+        return result
+    except openai.error.OpenAIError as e:
+        raise AIAnalysisError(f"OpenAI API error: {str(e)}", analysis_type="recommendations")
+    except Exception as e:
+        raise AIAnalysisError(f"Recommendations error: {str(e)}", analysis_type="recommendations")
+
+@retry_on_failure(max_retries=3, delay=1.0)
+def generate_ai_insights_safe(business_data):
+    """Safe wrapper for AI insights with error handling"""
+    try:
+        result = generate_ai_insights(business_data)
+        if result.get('error'):
+            raise AIAnalysisError(f"AI insights failed: {result['error']}", analysis_type="insights")
+        return result
+    except openai.error.OpenAIError as e:
+        raise AIAnalysisError(f"OpenAI API error: {str(e)}", analysis_type="insights")
+    except Exception as e:
+        raise AIAnalysisError(f"Insights error: {str(e)}", analysis_type="insights")
+
 @app.route('/api/ai-chat', methods=['POST'])
+@handle_errors
+@log_performance
 def ai_chat():
     """AI chat endpoint for business questions"""
-    if not session.get('user_authenticated'):
-        return jsonify({'error': 'Not authenticated'}), 401
+    # Validate authentication
+    user_id = validate_user_authentication()
     
+    # Validate request data
+    data = request.get_json()
+    if not data:
+        raise ValidationError("Request data is required")
+    
+    message = data.get('message', '').strip()
+    if not message:
+        raise ValidationError("Message is required", field="message")
+    
+    if len(message) > 1000:
+        raise ValidationError("Message too long (max 1000 characters)", field="message")
+    
+    # Get user's business data for context
+    businesses = safe_file_operation(load_businesses)
+    user_business = next((b for b in businesses if b['user_id'] == user_id), None)
+    
+    if not user_business:
+        raise DataNotFoundError("Business profile not found", resource="business_profile")
+    
+    # Create context from business data
+    onboarding_data = user_business.get('onboarding_data', {})
+    business_context = f"""
+    Business Context:
+    - Name: {onboarding_data.get('business_name', 'Unknown')}
+    - Category: {user_business.get('category', 'Unknown')}
+    - Revenue: {onboarding_data.get('monthly_revenue', 'Not specified')}
+    - Revenue Model: {onboarding_data.get('revenue_model', 'Not specified')}
+    - Customer Retention: {onboarding_data.get('customer_retention', 'Not specified')}
+    - CAC: {onboarding_data.get('customer_acquisition_cost', 'Not specified')}
+    - Cash Flow: {onboarding_data.get('cash_flow', 'Not specified')}
+    """
+    
+    # Call OpenAI API with error handling
     try:
-        data = request.get_json()
-        user_message = data.get('message', '')
-        
-        if not user_message:
-            return jsonify({'error': 'No message provided'}), 400
-        
-        # Get user's business data for context
-        user_id = session.get('user_id')
-        businesses = load_businesses()
-        user_business = next((b for b in businesses if b['user_id'] == user_id), None)
-        
-        if not user_business:
-            return jsonify({'error': 'No business data found'}), 404
-        
-        # Create context from business data
-        onboarding_data = user_business.get('onboarding_data', {})
-        business_context = f"""
-        Business Context:
-        - Name: {onboarding_data.get('business_name', 'Unknown')}
-        - Category: {user_business.get('category', 'Unknown')}
-        - Revenue: {onboarding_data.get('monthly_revenue', 'Not specified')}
-        - Revenue Model: {onboarding_data.get('revenue_model', 'Not specified')}
-        - Customer Retention: {onboarding_data.get('customer_retention', 'Not specified')}
-        - CAC: {onboarding_data.get('customer_acquisition_cost', 'Not specified')}
-        - Cash Flow: {onboarding_data.get('cash_flow', 'Not specified')}
-        """
-        
-        # Call OpenAI API
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": f"You are ProfitWi$e AI, an expert business consultant. Use this business context to provide helpful, actionable advice: {business_context}"},
-                {"role": "user", "content": user_message}
+                {"role": "user", "content": message}
             ],
             max_tokens=1000,
             temperature=0.7
@@ -1586,7 +1645,7 @@ def ai_chat():
         
         user_business['chat_history'].append({
             'role': 'user',
-            'content': user_message,
+            'content': message,
             'timestamp': datetime.now().isoformat()
         })
         
@@ -1599,21 +1658,47 @@ def ai_chat():
         # Keep only last 50 messages
         user_business['chat_history'] = user_business['chat_history'][-50:]
         
-        # Update business data
+        # Update business data safely
         businesses = [b for b in businesses if b['user_id'] != user_id]
         businesses.append(user_business)
-        save_businesses(businesses)
+        safe_file_operation(save_businesses, businesses)
         
         return jsonify({
             'success': True,
             'response': ai_response,
             'timestamp': datetime.now().isoformat()
         })
-        
+    
+    except openai.error.OpenAIError as e:
+        raise AIAnalysisError(f"OpenAI API error: {str(e)}", analysis_type="chat")
     except Exception as e:
+        raise AIAnalysisError(f"Chat error: {str(e)}", analysis_type="chat")
+
+@app.route('/api/error-log', methods=['POST'])
+@handle_errors
+def log_error():
+    """Log client-side errors for monitoring"""
+    try:
+        data = request.get_json()
+        if not data:
+            raise ValidationError("Error log data is required")
+        
+        # Log the error (in production, you'd send this to a monitoring service)
+        logger.error(f"Client-side error: {data.get('error', {}).get('message', 'Unknown error')}", extra={
+            "client_error": data,
+            "user_agent": request.headers.get('User-Agent'),
+            "ip_address": request.remote_addr
+        })
+        
         return jsonify({
-            'success': False,
-            'error': str(e)
+            "success": True,
+            "message": "Error logged successfully"
+        })
+    except Exception as e:
+        logger.error(f"Failed to log client error: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": "Failed to log error"
         }), 500
 
 @app.route('/login')

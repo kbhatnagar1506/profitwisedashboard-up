@@ -1,4 +1,12 @@
 // Data service for fetching real business data from Flask API
+import { 
+  safeApiCall, 
+  createErrorContext, 
+  ProfitWiseError, 
+  NetworkError,
+  handleApiError,
+  handleNetworkError
+} from './error-handler'
 
 export interface BusinessInfo {
   name: string
@@ -102,21 +110,24 @@ class DataService {
   }
 
   async fetchDashboardData(): Promise<DashboardData> {
+    const context = createErrorContext('DataService', 'fetchDashboardData')
+    
     try {
-      const response = await fetch(`${this.baseUrl}/api/dashboard-data`, {
-        method: 'GET',
-        credentials: 'include', // Include cookies for session
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      return await safeApiCall(async () => {
+        const response = await fetch(`${this.baseUrl}/api/dashboard-data`, {
+          method: 'GET',
+          credentials: 'include', // Include cookies for session
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
+        if (!response.ok) {
+          await handleApiError(response, context)
+        }
 
-      const data = await response.json()
-      return data
+        return await response.json()
+      }, context)
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
       // Return mock data as fallback
@@ -233,7 +244,9 @@ class DataService {
   }
 
   async runAIAnalysis(): Promise<any> {
-    try {
+    const context = createErrorContext('DataService', 'runAIAnalysis')
+    
+    return safeApiCall(async () => {
       const response = await fetch(`${this.baseUrl}/api/ai-analysis`, {
         method: 'POST',
         credentials: 'include',
@@ -243,14 +256,11 @@ class DataService {
       })
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        await handleApiError(response, context)
       }
 
       return await response.json()
-    } catch (error) {
-      console.error('Error running AI analysis:', error)
-      throw error
-    }
+    }, context, 2) // Reduced retries for AI calls
   }
 
   async getAIInsights(): Promise<any> {
@@ -275,7 +285,9 @@ class DataService {
   }
 
   async sendAIMessage(message: string): Promise<any> {
-    try {
+    const context = createErrorContext('DataService', 'sendAIMessage')
+    
+    return safeApiCall(async () => {
       const response = await fetch(`${this.baseUrl}/api/ai-chat`, {
         method: 'POST',
         credentials: 'include',
@@ -286,14 +298,11 @@ class DataService {
       })
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        await handleApiError(response, context)
       }
 
       return await response.json()
-    } catch (error) {
-      console.error('Error sending AI message:', error)
-      throw error
-    }
+    }, context, 2) // Reduced retries for AI calls
   }
 
   private getMockData(): DashboardData {

@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
-import { Bell, Shield, Palette, Database, Save } from "lucide-react"
+import { Bell, Shield, Palette, Database, Save, AlertTriangle } from "lucide-react"
 import { DataBackup } from "./data-backup"
+import { ErrorMonitor } from "./error-monitor"
 
 export function SettingsPage() {
   const [notifications, setNotifications] = useState({
@@ -253,6 +254,22 @@ export function SettingsPage() {
 
       {/* Data Backup Section */}
       <DataBackup />
+
+      {/* Error Monitoring Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5" />
+            Error Monitoring
+          </CardTitle>
+          <CardDescription>
+            Monitor application errors and system health
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ErrorMonitor />
+        </CardContent>
+      </Card>
     </div>
   )
 }
