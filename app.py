@@ -452,6 +452,520 @@ def user_logout():
     session.pop('user_email', None)
     return redirect(url_for('index'))
 
+@app.route('/api/dashboard-data')
+def get_dashboard_data():
+    """Get user's business data for dashboard"""
+    if not session.get('user_authenticated'):
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    user_id = session.get('user_id')
+    businesses = load_businesses()
+    user_business = next((b for b in businesses if b['user_id'] == user_id), None)
+    
+    if not user_business:
+        return jsonify({'error': 'No business data found'}), 404
+    
+    # Extract and format data for dashboard
+    onboarding_data = user_business.get('onboarding_data', {})
+    
+    # Calculate metrics from form data
+    monthly_revenue = parse_revenue_range(onboarding_data.get('monthly_revenue', ''))
+    revenue_per_customer = parse_currency(onboarding_data.get('revenue_per_customer', ''))
+    customer_acquisition_cost = parse_currency(onboarding_data.get('customer_acquisition_cost', ''))
+    cash_flow = parse_cash_flow(onboarding_data.get('cash_flow', ''))
+    
+    # Calculate derived metrics
+    estimated_customers = calculate_estimated_customers(monthly_revenue, revenue_per_customer)
+    profit_margin = calculate_profit_margin(monthly_revenue, onboarding_data)
+    health_score = calculate_health_score(onboarding_data)
+    
+    dashboard_data = {
+        'business_info': {
+            'name': onboarding_data.get('business_name', 'Your Business'),
+            'category': user_business.get('category', ''),
+            'website': onboarding_data.get('website_url', ''),
+            'completion_date': user_business.get('onboarding_completed_at', ''),
+            'data_completeness': user_business.get('data_completeness', 0)
+        },
+        'financial_metrics': {
+            'monthly_revenue': monthly_revenue,
+            'revenue_per_customer': revenue_per_customer,
+            'customer_acquisition_cost': customer_acquisition_cost,
+            'estimated_customers': estimated_customers,
+            'profit_margin': profit_margin,
+            'cash_flow_in': cash_flow.get('in', 0),
+            'cash_flow_out': cash_flow.get('out', 0),
+            'net_cash_flow': cash_flow.get('net', 0)
+        },
+        'customer_metrics': {
+            'retention_rate': parse_retention_rate(onboarding_data.get('customer_retention', '')),
+            'revenue_model': onboarding_data.get('revenue_model', ''),
+            'seasonality': onboarding_data.get('seasonality', ''),
+            'top_customers': onboarding_data.get('top_customers', ''),
+            'upsell_cross_sell': onboarding_data.get('upsell_cross_sell', '')
+        },
+        'growth_metrics': {
+            'last_price_change': onboarding_data.get('last_price_change', ''),
+            'lead_generation': onboarding_data.get('lead_generation', ''),
+            'profit_barriers': onboarding_data.get('profit_barriers', ''),
+            'opportunities': onboarding_data.get('cost_revenue_opportunities', ''),
+            'unit_economics': onboarding_data.get('unit_economics', '')
+        },
+        'operational_metrics': {
+            'direct_costs': onboarding_data.get('direct_costs', ''),
+            'operating_expenses': onboarding_data.get('operating_expenses', ''),
+            'fastest_growing_expenses': onboarding_data.get('fastest_growing_expenses', ''),
+            'waste_tracking': onboarding_data.get('waste_tracking', ''),
+            'financial_tools': onboarding_data.get('financial_tools', '')
+        },
+        'social_media': {
+            'linkedin': onboarding_data.get('linkedin_page', ''),
+            'twitter': onboarding_data.get('twitter_handle', ''),
+            'instagram': onboarding_data.get('instagram_account', ''),
+            'facebook': onboarding_data.get('facebook_page', ''),
+            'tiktok_youtube': onboarding_data.get('tiktok_youtube', '')
+        },
+        'reputation': {
+            'yelp': onboarding_data.get('yelp_profile', ''),
+            'google_business': onboarding_data.get('google_business', ''),
+            'glassdoor': onboarding_data.get('glassdoor', ''),
+            'app_store': onboarding_data.get('app_store_reviews', '')
+        },
+        'analytics': {
+            'google_analytics': onboarding_data.get('google_analytics', ''),
+            'seo_tools': onboarding_data.get('seo_tools', ''),
+            'ecommerce_platforms': onboarding_data.get('ecommerce_platforms', ''),
+            'ad_platforms': onboarding_data.get('ad_platforms', '')
+        },
+        'health_score': health_score,
+        'alerts': generate_business_alerts(onboarding_data),
+        'recommendations': generate_business_recommendations(onboarding_data)
+    }
+    
+    return jsonify(dashboard_data)
+
+def parse_revenue_range(revenue_str):
+    """Parse revenue range string to get average value"""
+    if not revenue_str:
+        return 0
+    
+    # Extract numbers from strings like "$50,000 - $75,000"
+    import re
+    numbers = re.findall(r'[\d,]+', revenue_str.replace('$', '').replace(',', ''))
+    if len(numbers) >= 2:
+        return (int(numbers[0]) + int(numbers[1])) // 2
+    elif len(numbers) == 1:
+        return int(numbers[0])
+    return 0
+
+def parse_currency(currency_str):
+    """Parse currency string to get numeric value"""
+    if not currency_str:
+        return 0
+    
+    import re
+    numbers = re.findall(r'[\d,]+', currency_str.replace('$', '').replace(',', ''))
+    if numbers:
+        return int(numbers[0])
+    return 0
+
+def parse_cash_flow(cash_flow_str):
+    """Parse cash flow string like '$60,000 in, $45,000 out'"""
+    if not cash_flow_str:
+        return {'in': 0, 'out': 0, 'net': 0}
+    
+    import re
+    # Look for patterns like "in" and "out"
+    in_match = re.search(r'(\d+(?:,\d+)*).*in', cash_flow_str, re.IGNORECASE)
+    out_match = re.search(r'(\d+(?:,\d+)*).*out', cash_flow_str, re.IGNORECASE)
+    
+    cash_in = int(in_match.group(1).replace(',', '')) if in_match else 0
+    cash_out = int(out_match.group(1).replace(',', '')) if out_match else 0
+    
+    return {
+        'in': cash_in,
+        'out': cash_out,
+        'net': cash_in - cash_out
+    }
+
+def parse_retention_rate(retention_str):
+    """Parse retention rate from string"""
+    if not retention_str:
+        return 0
+    
+    import re
+    numbers = re.findall(r'(\d+(?:\.\d+)?)', retention_str)
+    if numbers:
+        return float(numbers[0])
+    return 0
+
+def calculate_estimated_customers(monthly_revenue, revenue_per_customer):
+    """Calculate estimated number of customers"""
+    if monthly_revenue > 0 and revenue_per_customer > 0:
+        return monthly_revenue // revenue_per_customer
+    return 0
+
+def calculate_profit_margin(monthly_revenue, onboarding_data):
+    """Calculate estimated profit margin"""
+    if monthly_revenue == 0:
+        return 0
+    
+    # Estimate based on direct costs and operating expenses
+    direct_costs = parse_currency(onboarding_data.get('direct_costs', ''))
+    operating_expenses = parse_currency(onboarding_data.get('operating_expenses', ''))
+    
+    total_costs = direct_costs + operating_expenses
+    if total_costs > 0:
+        profit = monthly_revenue - total_costs
+        return (profit / monthly_revenue) * 100
+    return 0
+
+def calculate_health_score(onboarding_data):
+    """Calculate business health score based on onboarding data"""
+    score = 0
+    max_score = 100
+    
+    # Revenue data (20 points)
+    if onboarding_data.get('monthly_revenue'):
+        score += 10
+    if onboarding_data.get('revenue_model'):
+        score += 5
+    if onboarding_data.get('revenue_type'):
+        score += 5
+    
+    # Customer data (20 points)
+    if onboarding_data.get('customer_retention'):
+        score += 10
+    if onboarding_data.get('revenue_per_customer'):
+        score += 5
+    if onboarding_data.get('customer_acquisition_cost'):
+        score += 5
+    
+    # Financial tracking (20 points)
+    if onboarding_data.get('financial_tools'):
+        score += 10
+    if onboarding_data.get('unit_economics'):
+        score += 5
+    if onboarding_data.get('waste_tracking'):
+        score += 5
+    
+    # Growth planning (20 points)
+    if onboarding_data.get('cost_revenue_opportunities'):
+        score += 10
+    if onboarding_data.get('lead_generation'):
+        score += 5
+    if onboarding_data.get('upsell_cross_sell'):
+        score += 5
+    
+    # Social presence (10 points)
+    social_count = sum(1 for key in ['linkedin_page', 'twitter_handle', 'instagram_account', 'facebook_page'] 
+                      if onboarding_data.get(key))
+    score += min(social_count * 2.5, 10)
+    
+    # Document uploads (10 points)
+    doc_count = sum(1 for key in ['financial_uploads', 'customer_uploads', 'strategic_uploads'] 
+                   if onboarding_data.get(key))
+    score += min(doc_count * 3.33, 10)
+    
+    return min(score, max_score)
+
+def generate_business_alerts(onboarding_data):
+    """Generate business alerts based on onboarding data"""
+    alerts = []
+    
+    # Cash flow alerts
+    cash_flow = parse_cash_flow(onboarding_data.get('cash_flow', ''))
+    if cash_flow['net'] < 0:
+        alerts.append({
+            'type': 'warning',
+            'title': 'Negative Cash Flow',
+            'message': 'Your cash outflow exceeds inflow. Consider reviewing expenses or increasing revenue.'
+        })
+    
+    # Low retention rate
+    retention = parse_retention_rate(onboarding_data.get('customer_retention', ''))
+    if retention > 0 and retention < 70:
+        alerts.append({
+            'type': 'warning',
+            'title': 'Low Customer Retention',
+            'message': f'Your customer retention rate of {retention}% is below industry average. Consider improving customer experience.'
+        })
+    
+    # High CAC
+    cac = parse_currency(onboarding_data.get('customer_acquisition_cost', ''))
+    revenue_per_customer = parse_currency(onboarding_data.get('revenue_per_customer', ''))
+    if cac > 0 and revenue_per_customer > 0 and (cac / revenue_per_customer) > 0.3:
+        alerts.append({
+            'type': 'info',
+            'title': 'High Customer Acquisition Cost',
+            'message': 'Your CAC is high relative to customer value. Consider optimizing marketing channels.'
+        })
+    
+    return alerts
+
+def generate_business_recommendations(onboarding_data):
+    """Generate business recommendations based on onboarding data"""
+    recommendations = []
+    
+    # Revenue diversification
+    if onboarding_data.get('revenue_type') == 'one-time':
+        recommendations.append({
+            'category': 'Revenue',
+            'title': 'Consider Recurring Revenue',
+            'description': 'Explore subscription models or recurring services to stabilize cash flow.'
+        })
+    
+    # Social media presence
+    social_count = sum(1 for key in ['linkedin_page', 'twitter_handle', 'instagram_account', 'facebook_page'] 
+                      if onboarding_data.get(key))
+    if social_count < 2:
+        recommendations.append({
+            'category': 'Marketing',
+            'title': 'Expand Social Media Presence',
+            'description': 'Increase your social media presence to reach more customers and build brand awareness.'
+        })
+    
+    # Financial tracking
+    if not onboarding_data.get('financial_tools'):
+        recommendations.append({
+            'category': 'Operations',
+            'title': 'Implement Financial Tracking',
+            'description': 'Use proper financial software to track expenses, revenue, and profitability more accurately.'
+        })
+    
+    # Growth opportunities
+    if onboarding_data.get('upsell_cross_sell') == 'no':
+        recommendations.append({
+            'category': 'Growth',
+            'title': 'Develop Upselling Strategy',
+            'description': 'Create additional revenue streams by upselling or cross-selling to existing customers.'
+        })
+    
+    return recommendations
+
+@app.route('/api/process-documents', methods=['POST'])
+def process_documents():
+    """Process uploaded documents and extract data"""
+    if not session.get('user_authenticated'):
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        data = request.get_json()
+        documents = data.get('documents', [])
+        
+        extracted_data = {
+            'financial_data': {},
+            'customer_data': {},
+            'strategic_data': {},
+            'summary': {
+                'total_documents': len(documents),
+                'processed_documents': 0,
+                'extracted_metrics': 0,
+                'errors': []
+            }
+        }
+        
+        for doc in documents:
+            try:
+                doc_type = doc.get('type', 'unknown')
+                doc_content = doc.get('content', '')
+                
+                if doc_type == 'financial':
+                    financial_data = extract_financial_data(doc_content)
+                    extracted_data['financial_data'].update(financial_data)
+                    extracted_data['summary']['processed_documents'] += 1
+                    extracted_data['summary']['extracted_metrics'] += len(financial_data)
+                
+                elif doc_type == 'customer':
+                    customer_data = extract_customer_data(doc_content)
+                    extracted_data['customer_data'].update(customer_data)
+                    extracted_data['summary']['processed_documents'] += 1
+                    extracted_data['summary']['extracted_metrics'] += len(customer_data)
+                
+                elif doc_type == 'strategic':
+                    strategic_data = extract_strategic_data(doc_content)
+                    extracted_data['strategic_data'].update(strategic_data)
+                    extracted_data['summary']['processed_documents'] += 1
+                    extracted_data['summary']['extracted_metrics'] += len(strategic_data)
+                
+            except Exception as e:
+                extracted_data['summary']['errors'].append(f"Error processing document: {str(e)}")
+        
+        # Update user's business data with extracted information
+        user_id = session.get('user_id')
+        businesses = load_businesses()
+        user_business = next((b for b in businesses if b['user_id'] == user_id), None)
+        
+        if user_business:
+            user_business['extracted_data'] = extracted_data
+            user_business['updated_at'] = datetime.now().isoformat()
+            
+            # Save updated data
+            businesses = [b for b in businesses if b['user_id'] != user_id]
+            businesses.append(user_business)
+            save_businesses(businesses)
+        
+        return jsonify({
+            'success': True,
+            'extracted_data': extracted_data
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+def extract_financial_data(content):
+    """Extract financial data from document content"""
+    import re
+    
+    financial_data = {}
+    
+    # Extract revenue patterns
+    revenue_patterns = [
+        r'revenue[:\s]*\$?([\d,]+(?:\.\d{2})?)',
+        r'sales[:\s]*\$?([\d,]+(?:\.\d{2})?)',
+        r'income[:\s]*\$?([\d,]+(?:\.\d{2})?)',
+        r'total[:\s]*revenue[:\s]*\$?([\d,]+(?:\.\d{2})?)'
+    ]
+    
+    for pattern in revenue_patterns:
+        matches = re.findall(pattern, content, re.IGNORECASE)
+        if matches:
+            financial_data['extracted_revenue'] = max([float(m.replace(',', '')) for m in matches])
+            break
+    
+    # Extract profit patterns
+    profit_patterns = [
+        r'profit[:\s]*\$?([\d,]+(?:\.\d{2})?)',
+        r'net[:\s]*income[:\s]*\$?([\d,]+(?:\.\d{2})?)',
+        r'earnings[:\s]*\$?([\d,]+(?:\.\d{2})?)'
+    ]
+    
+    for pattern in profit_patterns:
+        matches = re.findall(pattern, content, re.IGNORECASE)
+        if matches:
+            financial_data['extracted_profit'] = max([float(m.replace(',', '')) for m in matches])
+            break
+    
+    # Extract expense patterns
+    expense_patterns = [
+        r'expenses[:\s]*\$?([\d,]+(?:\.\d{2})?)',
+        r'costs[:\s]*\$?([\d,]+(?:\.\d{2})?)',
+        r'total[:\s]*expenses[:\s]*\$?([\d,]+(?:\.\d{2})?)'
+    ]
+    
+    for pattern in expense_patterns:
+        matches = re.findall(pattern, content, re.IGNORECASE)
+        if matches:
+            financial_data['extracted_expenses'] = max([float(m.replace(',', '')) for m in matches])
+            break
+    
+    # Extract cash flow patterns
+    cash_patterns = [
+        r'cash[:\s]*flow[:\s]*\$?([\d,]+(?:\.\d{2})?)',
+        r'operating[:\s]*cash[:\s]*\$?([\d,]+(?:\.\d{2})?)'
+    ]
+    
+    for pattern in cash_patterns:
+        matches = re.findall(pattern, content, re.IGNORECASE)
+        if matches:
+            financial_data['extracted_cash_flow'] = max([float(m.replace(',', '')) for m in matches])
+            break
+    
+    return financial_data
+
+def extract_customer_data(content):
+    """Extract customer data from document content"""
+    import re
+    
+    customer_data = {}
+    
+    # Extract customer count patterns
+    customer_patterns = [
+        r'customers[:\s]*(\d+(?:,\d+)*)',
+        r'clients[:\s]*(\d+(?:,\d+)*)',
+        r'total[:\s]*customers[:\s]*(\d+(?:,\d+)*)'
+    ]
+    
+    for pattern in customer_patterns:
+        matches = re.findall(pattern, content, re.IGNORECASE)
+        if matches:
+            customer_data['extracted_customer_count'] = max([int(m.replace(',', '')) for m in matches])
+            break
+    
+    # Extract retention rate patterns
+    retention_patterns = [
+        r'retention[:\s]*(\d+(?:\.\d+)?)%',
+        r'retention[:\s]*rate[:\s]*(\d+(?:\.\d+)?)%',
+        r'customer[:\s]*retention[:\s]*(\d+(?:\.\d+)?)%'
+    ]
+    
+    for pattern in retention_patterns:
+        matches = re.findall(pattern, content, re.IGNORECASE)
+        if matches:
+            customer_data['extracted_retention_rate'] = max([float(m) for m in matches])
+            break
+    
+    # Extract churn rate patterns
+    churn_patterns = [
+        r'churn[:\s]*(\d+(?:\.\d+)?)%',
+        r'churn[:\s]*rate[:\s]*(\d+(?:\.\d+)?)%',
+        r'customer[:\s]*churn[:\s]*(\d+(?:\.\d+)?)%'
+    ]
+    
+    for pattern in churn_patterns:
+        matches = re.findall(pattern, content, re.IGNORECASE)
+        if matches:
+            customer_data['extracted_churn_rate'] = max([float(m) for m in matches])
+            break
+    
+    return customer_data
+
+def extract_strategic_data(content):
+    """Extract strategic data from document content"""
+    import re
+    
+    strategic_data = {}
+    
+    # Extract growth rate patterns
+    growth_patterns = [
+        r'growth[:\s]*(\d+(?:\.\d+)?)%',
+        r'growth[:\s]*rate[:\s]*(\d+(?:\.\d+)?)%',
+        r'revenue[:\s]*growth[:\s]*(\d+(?:\.\d+)?)%'
+    ]
+    
+    for pattern in growth_patterns:
+        matches = re.findall(pattern, content, re.IGNORECASE)
+        if matches:
+            strategic_data['extracted_growth_rate'] = max([float(m) for m in matches])
+            break
+    
+    # Extract market share patterns
+    market_patterns = [
+        r'market[:\s]*share[:\s]*(\d+(?:\.\d+)?)%',
+        r'share[:\s]*of[:\s]*market[:\s]*(\d+(?:\.\d+)?)%'
+    ]
+    
+    for pattern in market_patterns:
+        matches = re.findall(pattern, content, re.IGNORECASE)
+        if matches:
+            strategic_data['extracted_market_share'] = max([float(m) for m in matches])
+            break
+    
+    # Extract key metrics
+    if 'kpi' in content.lower() or 'key performance' in content.lower():
+        strategic_data['has_kpis'] = True
+    
+    if 'strategy' in content.lower() or 'strategic' in content.lower():
+        strategic_data['has_strategy'] = True
+    
+    if 'goals' in content.lower() or 'objectives' in content.lower():
+        strategic_data['has_goals'] = True
+    
+    return strategic_data
+
 @app.route('/login')
 def login_page():
     """Login page"""

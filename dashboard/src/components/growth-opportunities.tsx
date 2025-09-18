@@ -178,13 +178,13 @@ export function GrowthOpportunities() {
   return (
     <div className="space-y-6">
       {/* Main Growth Opportunities Dashboard */}
-      <Card>
-        <CardHeader>
+    <Card>
+      <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5" />
+        <CardTitle className="flex items-center gap-2">
+          <TrendingUp className="w-5 h-5" />
               Growth Opportunities Dashboard
-            </CardTitle>
+        </CardTitle>
             <div className="flex items-center gap-1">
               <Button
                 variant={activeView === "overview" ? "default" : "outline"}
@@ -220,7 +220,7 @@ export function GrowthOpportunities() {
               </Button>
             </div>
           </div>
-        </CardHeader>
+      </CardHeader>
         <CardContent className="space-y-6">
           {/* Key Growth Metrics */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -332,8 +332,8 @@ export function GrowthOpportunities() {
                     <Bar dataKey="potential" fill="#10b981" name="Potential Market Share" />
                   </BarChart>
                 </ResponsiveContainer>
-              </div>
-              
+            </div>
+
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div>
                   <h5 className="font-medium mb-3">Market Opportunity by Region</h5>
@@ -481,8 +481,8 @@ export function GrowthOpportunities() {
                             <span className="text-xs text-muted-foreground">{milestone.progress}%</span>
                           </div>
                         ))}
-                      </div>
-                    </div>
+              </div>
+            </div>
 
                     <div className="flex items-center justify-between">
                       <div className="flex flex-wrap gap-2">
@@ -493,13 +493,13 @@ export function GrowthOpportunities() {
                         ))}
                       </div>
                       <Button size="sm" variant="outline">
-                        <Zap className="w-3 h-3 mr-2" />
+              <Zap className="w-3 h-3 mr-2" />
                         View Details
-                        <ArrowRight className="w-3 h-3 ml-2" />
-                      </Button>
+              <ArrowRight className="w-3 h-3 ml-2" />
+            </Button>
                     </div>
-                  </div>
-                ))}
+          </div>
+        ))}
               </div>
             </div>
           )}
@@ -577,8 +577,8 @@ export function GrowthOpportunities() {
                 <Badge variant="secondary">Excellent</Badge>
               </div>
             </div>
-          </CardContent>
-        </Card>
+      </CardContent>
+    </Card>
       </div>
     </div>
   )
