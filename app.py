@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_from_directory
 import os
 import json
 import hashlib
@@ -486,8 +486,9 @@ def dashboard():
     return redirect(url_for('dashboard_page'))
 
 @app.route('/dashboard')
+@app.route('/dashboard/')
 def dashboard_page():
-    """Dashboard page - embedded Next.js dashboard"""
+    """Serve the integrated Next.js dashboard"""
     if not session.get('user_authenticated'):
         return redirect(url_for('login_page'))
     
@@ -498,13 +499,26 @@ def dashboard_page():
     if not user_business:
         return redirect(url_for('onboarding_page'))
     
-    # Get user's business data for the dashboard
-    onboarding_data = user_business.get('onboarding_data', {})
-    
-    return render_template('dashboard.html', 
+    # Create a wrapper that loads the Next.js dashboard
+    return render_template('dashboard_wrapper.html', 
                          user_name=session.get('user_name', 'User'),
-                         business_data=onboarding_data,
-                         user_business=user_business)
+                         user_id=user_id)
+
+@app.route('/dashboard/_next/<path:filename>')
+def dashboard_static(filename):
+    """Serve Next.js static assets"""
+    try:
+        return send_from_directory('dashboard/out/_next', filename)
+    except FileNotFoundError:
+        return "Asset not found", 404
+
+@app.route('/dashboard/static/<path:filename>')
+def dashboard_static_files(filename):
+    """Serve Next.js static files"""
+    try:
+        return send_from_directory('dashboard/out/static', filename)
+    except FileNotFoundError:
+        return "File not found", 404
 
 @app.route('/user_logout')
 def user_logout():
