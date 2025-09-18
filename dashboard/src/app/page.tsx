@@ -21,6 +21,7 @@ import { RevenueChart, CustomerSegmentsChart, ProductPerformanceChart } from "@/
 import { ActivityChart } from "@/components/activity-chart"
 import { TopProducts } from "@/components/top-products"
 import { SettingsPage } from "@/components/settings-page"
+import { AIAnalysisDisplay } from "@/components/ai-analysis-display"
 
 export default function Dashboard() {
   const [activeSection, setActiveSection] = useState("Overview")
@@ -106,6 +107,8 @@ export default function Dashboard() {
             </div>
           </div>
         )
+      case "AI Analysis":
+        return <AIAnalysisDisplay />
       case "Business Health":
         return <BusinessHealthDetailed />
       case "Financial Audit":

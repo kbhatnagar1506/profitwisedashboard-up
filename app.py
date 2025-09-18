@@ -8,11 +8,15 @@ import re
 from scraper import DataScraper
 import threading
 import time
+import openai
 
 app = Flask(__name__)
 
 # Generate a secure secret key for sessions
 app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(32))
+
+# OpenAI configuration
+openai.api_key = os.environ.get('OPENAI_API_KEY')
 
 # Files to store data
 DATA_FILE = 'user_entries.json'
@@ -996,6 +1000,278 @@ def extract_strategic_data(content):
     
     return strategic_data
 
+def analyze_business_with_ai(business_data):
+    """Comprehensive AI analysis of business data"""
+    try:
+        if not openai.api_key:
+            return {"error": "OpenAI API key not configured"}
+        
+        # Prepare business data for analysis
+        onboarding_data = business_data.get('onboarding_data', {})
+        extracted_data = business_data.get('extracted_data', {})
+        
+        # Create comprehensive business profile
+        business_profile = {
+            "business_name": onboarding_data.get('business_name', 'Unknown Business'),
+            "category": business_data.get('category', 'Unknown'),
+            "monthly_revenue": onboarding_data.get('monthly_revenue', ''),
+            "revenue_model": onboarding_data.get('revenue_model', ''),
+            "customer_retention": onboarding_data.get('customer_retention', ''),
+            "revenue_per_customer": onboarding_data.get('revenue_per_customer', ''),
+            "customer_acquisition_cost": onboarding_data.get('customer_acquisition_cost', ''),
+            "cash_flow": onboarding_data.get('cash_flow', ''),
+            "direct_costs": onboarding_data.get('direct_costs', ''),
+            "operating_expenses": onboarding_data.get('operating_expenses', ''),
+            "profit_barriers": onboarding_data.get('profit_barriers', ''),
+            "growth_opportunities": onboarding_data.get('cost_revenue_opportunities', ''),
+            "financial_tools": onboarding_data.get('financial_tools', ''),
+            "social_media_presence": {
+                "linkedin": onboarding_data.get('linkedin_page', ''),
+                "twitter": onboarding_data.get('twitter_handle', ''),
+                "instagram": onboarding_data.get('instagram_account', ''),
+                "facebook": onboarding_data.get('facebook_page', '')
+            },
+            "extracted_financial_data": extracted_data.get('financial_data', {}),
+            "extracted_customer_data": extracted_data.get('customer_data', {}),
+            "extracted_strategic_data": extracted_data.get('strategic_data', {})
+        }
+        
+        # Create AI analysis prompt
+        prompt = f"""
+        As a business analyst and AI consultant, analyze this business data and provide comprehensive insights:
+
+        Business Profile:
+        {json.dumps(business_profile, indent=2)}
+
+        Please provide a detailed analysis in the following JSON format:
+        {{
+            "executive_summary": "Brief overview of business health and key findings",
+            "financial_analysis": {{
+                "revenue_health": "Analysis of revenue streams and sustainability",
+                "profitability": "Assessment of profit margins and cost structure",
+                "cash_flow_analysis": "Evaluation of cash flow management",
+                "financial_risks": "Identified financial risks and concerns",
+                "financial_recommendations": "Specific financial improvement suggestions"
+            }},
+            "customer_analysis": {{
+                "customer_health": "Assessment of customer base and retention",
+                "acquisition_efficiency": "Analysis of customer acquisition costs and methods",
+                "retention_strategy": "Evaluation of customer retention strategies",
+                "customer_risks": "Identified customer-related risks",
+                "customer_recommendations": "Specific customer improvement suggestions"
+            }},
+            "growth_analysis": {{
+                "growth_potential": "Assessment of growth opportunities",
+                "market_position": "Analysis of competitive position",
+                "scalability": "Evaluation of business scalability",
+                "growth_barriers": "Identified barriers to growth",
+                "growth_recommendations": "Specific growth strategy suggestions"
+            }},
+            "operational_analysis": {{
+                "efficiency": "Assessment of operational efficiency",
+                "process_optimization": "Areas for process improvement",
+                "technology_adoption": "Technology usage and recommendations",
+                "operational_risks": "Identified operational risks",
+                "operational_recommendations": "Specific operational improvement suggestions"
+            }},
+            "strategic_recommendations": [
+                "Top 5 strategic recommendations for business improvement"
+            ],
+            "priority_actions": [
+                "Immediate action items (next 30 days)"
+            ],
+            "long_term_goals": [
+                "Long-term strategic goals (6-12 months)"
+            ],
+            "risk_assessment": {{
+                "high_risks": ["Critical risks that need immediate attention"],
+                "medium_risks": ["Moderate risks to monitor"],
+                "low_risks": ["Minor risks to keep an eye on"]
+            }},
+            "success_metrics": {{
+                "kpis_to_track": ["Key performance indicators to monitor"],
+                "benchmarks": "Industry benchmarks and targets",
+                "measurement_frequency": "How often to measure these metrics"
+            }},
+            "ai_confidence_score": 85,
+            "analysis_timestamp": "{datetime.now().isoformat()}"
+        }}
+
+        Provide a professional, actionable analysis that a business owner can immediately implement.
+        """
+        
+        # Call OpenAI API
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are an expert business analyst with 20+ years of experience helping businesses optimize their operations, improve profitability, and scale effectively. Provide detailed, actionable insights."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=4000,
+            temperature=0.3
+        )
+        
+        # Parse AI response
+        ai_analysis = response.choices[0].message.content
+        
+        # Try to parse as JSON, fallback to text if needed
+        try:
+            analysis_data = json.loads(ai_analysis)
+        except json.JSONDecodeError:
+            # If not valid JSON, create structured response
+            analysis_data = {
+                "executive_summary": ai_analysis[:500] + "...",
+                "raw_analysis": ai_analysis,
+                "ai_confidence_score": 75,
+                "analysis_timestamp": datetime.now().isoformat()
+            }
+        
+        return analysis_data
+        
+    except Exception as e:
+        print(f"Error in AI analysis: {e}")
+        return {
+            "error": f"AI analysis failed: {str(e)}",
+            "ai_confidence_score": 0,
+            "analysis_timestamp": datetime.now().isoformat()
+        }
+
+def generate_ai_recommendations(business_data):
+    """Generate AI-powered business recommendations"""
+    try:
+        if not openai.api_key:
+            return {"error": "OpenAI API key not configured"}
+        
+        onboarding_data = business_data.get('onboarding_data', {})
+        
+        prompt = f"""
+        Based on this business data, generate 10 specific, actionable recommendations:
+
+        Business Data:
+        - Category: {business_data.get('category', 'Unknown')}
+        - Revenue: {onboarding_data.get('monthly_revenue', 'Not specified')}
+        - Revenue Model: {onboarding_data.get('revenue_model', 'Not specified')}
+        - Customer Retention: {onboarding_data.get('customer_retention', 'Not specified')}
+        - CAC: {onboarding_data.get('customer_acquisition_cost', 'Not specified')}
+        - Revenue per Customer: {onboarding_data.get('revenue_per_customer', 'Not specified')}
+        - Cash Flow: {onboarding_data.get('cash_flow', 'Not specified')}
+        - Profit Barriers: {onboarding_data.get('profit_barriers', 'Not specified')}
+        - Growth Opportunities: {onboarding_data.get('cost_revenue_opportunities', 'Not specified')}
+        - Financial Tools: {onboarding_data.get('financial_tools', 'Not specified')}
+
+        Provide recommendations in this JSON format:
+        {{
+            "recommendations": [
+                {{
+                    "title": "Recommendation title",
+                    "description": "Detailed description",
+                    "category": "Financial|Customer|Growth|Operations|Marketing",
+                    "priority": "High|Medium|Low",
+                    "timeline": "Immediate|1-3 months|3-6 months|6+ months",
+                    "impact": "High|Medium|Low",
+                    "effort": "High|Medium|Low",
+                    "specific_actions": ["Action 1", "Action 2", "Action 3"]
+                }}
+            ]
+        }}
+        """
+        
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a business consultant providing specific, actionable recommendations."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=2000,
+            temperature=0.4
+        )
+        
+        ai_response = response.choices[0].message.content
+        
+        try:
+            return json.loads(ai_response)
+        except json.JSONDecodeError:
+            return {
+                "recommendations": [{
+                    "title": "AI Analysis Available",
+                    "description": ai_response[:200] + "...",
+                    "category": "General",
+                    "priority": "Medium",
+                    "timeline": "Immediate",
+                    "impact": "Medium",
+                    "effort": "Medium",
+                    "specific_actions": ["Review AI analysis", "Implement suggestions"]
+                }]
+            }
+        
+    except Exception as e:
+        print(f"Error generating AI recommendations: {e}")
+        return {"error": f"AI recommendations failed: {str(e)}"}
+
+def generate_ai_insights(business_data):
+    """Generate AI insights for dashboard display"""
+    try:
+        if not openai.api_key:
+            return {"error": "OpenAI API key not configured"}
+        
+        onboarding_data = business_data.get('onboarding_data', {})
+        
+        prompt = f"""
+        Generate 5 key insights for a business dashboard based on this data:
+
+        Business: {onboarding_data.get('business_name', 'Unknown')}
+        Category: {business_data.get('category', 'Unknown')}
+        Revenue: {onboarding_data.get('monthly_revenue', 'Not specified')}
+        Revenue Model: {onboarding_data.get('revenue_model', 'Not specified')}
+        Customer Retention: {onboarding_data.get('customer_retention', 'Not specified')}
+        CAC: {onboarding_data.get('customer_acquisition_cost', 'Not specified')}
+        Cash Flow: {onboarding_data.get('cash_flow', 'Not specified')}
+
+        Provide insights in this JSON format:
+        {{
+            "insights": [
+                {{
+                    "title": "Insight title",
+                    "description": "Brief description",
+                    "type": "opportunity|risk|trend|recommendation",
+                    "confidence": 85,
+                    "action_required": True,
+                    "category": "Financial|Customer|Growth|Operations"
+                }}
+            ]
+        }}
+        """
+        
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a business intelligence analyst creating dashboard insights."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=1500,
+            temperature=0.3
+        )
+        
+        ai_response = response.choices[0].message.content
+        
+        try:
+            return json.loads(ai_response)
+        except json.JSONDecodeError:
+            return {
+                "insights": [{
+                    "title": "AI Analysis Complete",
+                    "description": "Your business data has been analyzed by AI",
+                    "type": "recommendation",
+                    "confidence": 75,
+                    "action_required": True,
+                    "category": "General"
+                }]
+            }
+        
+    except Exception as e:
+        print(f"Error generating AI insights: {e}")
+        return {"error": f"AI insights failed: {str(e)}"}
+
 @app.route('/api/save-dashboard-state', methods=['POST'])
 def save_dashboard_state():
     """Save dashboard state and user interactions"""
@@ -1181,6 +1457,159 @@ def import_user_data():
                 'error': 'Failed to save imported data'
             }), 500
             
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/ai-analysis', methods=['POST'])
+def run_ai_analysis():
+    """Run comprehensive AI analysis on business data"""
+    if not session.get('user_authenticated'):
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        user_id = session.get('user_id')
+        businesses = load_businesses()
+        user_business = next((b for b in businesses if b['user_id'] == user_id), None)
+        
+        if not user_business:
+            return jsonify({'error': 'No business data found'}), 404
+        
+        # Run AI analysis
+        ai_analysis = analyze_business_with_ai(user_business)
+        ai_recommendations = generate_ai_recommendations(user_business)
+        ai_insights = generate_ai_insights(user_business)
+        
+        # Save AI analysis to business data
+        user_business['ai_analysis'] = {
+            'comprehensive_analysis': ai_analysis,
+            'recommendations': ai_recommendations,
+            'insights': ai_insights,
+            'analysis_timestamp': datetime.now().isoformat(),
+            'analysis_version': '1.0'
+        }
+        
+        # Update business data
+        businesses = [b for b in businesses if b['user_id'] != user_id]
+        businesses.append(user_business)
+        save_businesses(businesses)
+        
+        return jsonify({
+            'success': True,
+            'analysis': ai_analysis,
+            'recommendations': ai_recommendations,
+            'insights': ai_insights,
+            'timestamp': datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/ai-insights')
+def get_ai_insights():
+    """Get AI insights for dashboard"""
+    if not session.get('user_authenticated'):
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    user_id = session.get('user_id')
+    businesses = load_businesses()
+    user_business = next((b for b in businesses if b['user_id'] == user_id), None)
+    
+    if not user_business:
+        return jsonify({'error': 'No business data found'}), 404
+    
+    ai_data = user_business.get('ai_analysis', {})
+    
+    return jsonify({
+        'analysis': ai_data.get('comprehensive_analysis', {}),
+        'recommendations': ai_data.get('recommendations', {}),
+        'insights': ai_data.get('insights', {}),
+        'last_analysis': ai_data.get('analysis_timestamp', ''),
+        'has_analysis': bool(ai_data)
+    })
+
+@app.route('/api/ai-chat', methods=['POST'])
+def ai_chat():
+    """AI chat endpoint for business questions"""
+    if not session.get('user_authenticated'):
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        data = request.get_json()
+        user_message = data.get('message', '')
+        
+        if not user_message:
+            return jsonify({'error': 'No message provided'}), 400
+        
+        # Get user's business data for context
+        user_id = session.get('user_id')
+        businesses = load_businesses()
+        user_business = next((b for b in businesses if b['user_id'] == user_id), None)
+        
+        if not user_business:
+            return jsonify({'error': 'No business data found'}), 404
+        
+        # Create context from business data
+        onboarding_data = user_business.get('onboarding_data', {})
+        business_context = f"""
+        Business Context:
+        - Name: {onboarding_data.get('business_name', 'Unknown')}
+        - Category: {user_business.get('category', 'Unknown')}
+        - Revenue: {onboarding_data.get('monthly_revenue', 'Not specified')}
+        - Revenue Model: {onboarding_data.get('revenue_model', 'Not specified')}
+        - Customer Retention: {onboarding_data.get('customer_retention', 'Not specified')}
+        - CAC: {onboarding_data.get('customer_acquisition_cost', 'Not specified')}
+        - Cash Flow: {onboarding_data.get('cash_flow', 'Not specified')}
+        """
+        
+        # Call OpenAI API
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": f"You are ProfitWi$e AI, an expert business consultant. Use this business context to provide helpful, actionable advice: {business_context}"},
+                {"role": "user", "content": user_message}
+            ],
+            max_tokens=1000,
+            temperature=0.7
+        )
+        
+        ai_response = response.choices[0].message.content
+        
+        # Save chat message to business data
+        if 'chat_history' not in user_business:
+            user_business['chat_history'] = []
+        
+        user_business['chat_history'].append({
+            'role': 'user',
+            'content': user_message,
+            'timestamp': datetime.now().isoformat()
+        })
+        
+        user_business['chat_history'].append({
+            'role': 'assistant',
+            'content': ai_response,
+            'timestamp': datetime.now().isoformat()
+        })
+        
+        # Keep only last 50 messages
+        user_business['chat_history'] = user_business['chat_history'][-50:]
+        
+        # Update business data
+        businesses = [b for b in businesses if b['user_id'] != user_id]
+        businesses.append(user_business)
+        save_businesses(businesses)
+        
+        return jsonify({
+            'success': True,
+            'response': ai_response,
+            'timestamp': datetime.now().isoformat()
+        })
+        
     except Exception as e:
         return jsonify({
             'success': False,

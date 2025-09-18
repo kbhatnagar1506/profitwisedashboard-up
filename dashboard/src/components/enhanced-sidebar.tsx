@@ -78,11 +78,18 @@ const navItems: NavItem[] = [
     badge: '3',
     badgeVariant: 'secondary'
   },
-  {
-    id: 'AI Chat',
-    label: 'AI Chat',
-    icon: MessageSquare
-  },
+        {
+          id: 'AI Chat',
+          label: 'AI Chat',
+          icon: MessageSquare
+        },
+        {
+          id: 'AI Analysis',
+          label: 'AI Analysis',
+          icon: Brain,
+          badge: 'New',
+          badgeVariant: 'default'
+        },
   {
     id: 'Business Health',
     label: 'Business Health',

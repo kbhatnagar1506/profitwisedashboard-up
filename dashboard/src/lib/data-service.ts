@@ -232,6 +232,70 @@ class DataService {
     }
   }
 
+  async runAIAnalysis(): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/ai-analysis`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Error running AI analysis:', error)
+      throw error
+    }
+  }
+
+  async getAIInsights(): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/ai-insights`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Error getting AI insights:', error)
+      return null
+    }
+  }
+
+  async sendAIMessage(message: string): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/ai-chat`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Error sending AI message:', error)
+      throw error
+    }
+  }
+
   private getMockData(): DashboardData {
     return {
       business_info: {

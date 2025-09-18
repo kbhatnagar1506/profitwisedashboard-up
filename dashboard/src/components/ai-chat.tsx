@@ -73,42 +73,45 @@ export function AIChat() {
     }
 
     setMessages(prev => [...prev, userMessage])
+    const userInput = input.trim()
     setInput("")
     setIsLoading(true)
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      const aiResponseContent = await generateAIResponse(userInput)
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: generateAIResponse(input.trim()),
+        content: aiResponseContent,
         timestamp: new Date()
       }
       setMessages(prev => [...prev, aiMessage])
+    } catch (error) {
+      console.error('Error getting AI response:', error)
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: 'I apologize, but I encountered an error processing your request. Please try again.',
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
       setIsLoading(false)
-    }, 1500)
+    }
   }
 
-  const generateAIResponse = (userInput: string): string => {
-    const lowerInput = userInput.toLowerCase()
-    
-    if (lowerInput.includes('health') || lowerInput.includes('score')) {
-      return `Your business health score of 85% reflects strong performance across key metrics. The score is calculated based on:\n\n• Revenue growth trends\n• Customer retention rates\n• Profit margin stability\n• Cash flow management\n• Market position\n\nTo improve further, focus on the Q3 cash flow projection and consider diversifying revenue streams.`
+  const generateAIResponse = async (userInput: string): Promise<string> => {
+    try {
+      const response = await dataService.sendAIMessage(userInput)
+      if (response.success) {
+        return response.response
+      } else {
+        return `I apologize, but I'm having trouble processing your request right now. Please try again in a moment.`
+      }
+    } catch (error) {
+      console.error('Error getting AI response:', error)
+      return `I apologize, but I'm having trouble connecting to the AI service right now. Please try again later.`
     }
-    
-    if (lowerInput.includes('revenue') || lowerInput.includes('profit')) {
-      return `Your financial metrics show positive trends:\n\n**Revenue**: $45,231/month (+12.5% growth)\n**Profit Margin**: 26.7% (industry average: 20-25%)\n**Monthly Profit**: ~$12,000\n\nRecommendations:\n• Consider reinvesting 30% of profits in growth initiatives\n• Monitor customer acquisition costs\n• Explore premium service tiers for higher margins`
-    }
-    
-    if (lowerInput.includes('customer') || lowerInput.includes('retention')) {
-      return `Customer metrics are excellent:\n\n**Active Customers**: 150 (+8.2% growth)\n**Retention Rate**: 94.2% (outstanding!)\n**Customer Segments**: Well-distributed across demographics\n\nYour retention rate is significantly above the 80-85% industry average. Consider implementing a customer success program to maintain this level while scaling.`
-    }
-    
-    if (lowerInput.includes('alert') || lowerInput.includes('warning')) {
-      return `You have 1 active alert:\n\n**Cash Flow Projection Warning**\n• Q3 shows potential shortage\n• Current runway: ~4 months\n• Recommended actions:\n  - Review recurring expenses\n  - Accelerate accounts receivable\n  - Consider short-term financing\n  - Optimize inventory management\n\nI can help you create a detailed action plan.`
-    }
-    
-    return `I understand you're asking about "${userInput}". Based on your current business data, I can provide insights on:\n\n• Financial performance and trends\n• Customer analytics and retention\n• Growth opportunities\n• Risk assessment and alerts\n• Strategic recommendations\n\nCould you be more specific about which area you'd like me to analyze?`
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

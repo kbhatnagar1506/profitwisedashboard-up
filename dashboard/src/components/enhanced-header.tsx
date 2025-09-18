@@ -23,8 +23,11 @@ import {
   Sun,
   TrendingUp,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  RefreshCw,
+  Brain
 } from "lucide-react"
+import { dataService } from "@/lib/data-service"
 
 interface Alert {
   id: string
@@ -64,8 +67,37 @@ const sampleAlerts: Alert[] = [
 
 export function EnhancedHeader() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [alerts] = useState<Alert[]>(sampleAlerts)
+  const [alerts, setAlerts] = useState<Alert[]>(sampleAlerts)
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+
+  const handleRefreshAnalysis = async () => {
+    setIsRefreshing(true)
+    try {
+      await dataService.runAIAnalysis()
+      // Show success notification
+      setAlerts(prev => [{
+        id: Date.now().toString(),
+        type: 'success',
+        title: 'AI Analysis Updated',
+        message: 'Your business analysis has been refreshed with the latest data',
+        timestamp: new Date(),
+        read: false
+      }, ...prev])
+    } catch (error) {
+      console.error('Error refreshing analysis:', error)
+      setAlerts(prev => [{
+        id: Date.now().toString(),
+        type: 'error',
+        title: 'Analysis Failed',
+        message: 'Failed to refresh AI analysis. Please try again.',
+        timestamp: new Date(),
+        read: false
+      }, ...prev])
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
   
   const unreadAlerts = alerts.filter(alert => !alert.read).length
 
@@ -140,6 +172,27 @@ export function EnhancedHeader() {
 
         {/* Right Side Actions */}
         <div className="flex items-center space-x-4">
+          {/* Refresh Analysis Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefreshAnalysis}
+            disabled={isRefreshing}
+            className="flex items-center gap-2"
+          >
+            {isRefreshing ? (
+              <>
+                <RefreshCw className="h-4 w-4 animate-spin" />
+                Refreshing...
+              </>
+            ) : (
+              <>
+                <Brain className="h-4 w-4" />
+                Refresh AI
+              </>
+            )}
+          </Button>
+
           {/* Growth Indicator */}
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800">
             <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
